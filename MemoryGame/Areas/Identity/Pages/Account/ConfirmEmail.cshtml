@@ -1,0 +1,30 @@
+﻿@page
+@model ConfirmEmailModel
+@{
+    ViewData["Title"] = "Confirm email";
+    //Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+@inject UserManager<User> UserManager
+@*<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script type="text/javascript">
+
+    $(document).ready(function () {
+        console.log("document loaded");
+          @Model.LocalRedirect("/Contact");
+    });
+
+    $(window).on("load", function () {
+        console.log("window loaded");
+    });
+    </script>
+</head>*@
+
+
+<h2>@ViewData["Title"]</h2>
+<div>
+    <p>
+        Dear @Model.LoggedUserName, thank you for confirming your email.
+    </p>
+</div>
