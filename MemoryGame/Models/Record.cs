@@ -17,5 +17,6 @@ namespace MemoryGame.Models
         public string Translation { get; set; }
 
         public int ListId { get; set; }
+        public List List { get; set; }
     }
 }

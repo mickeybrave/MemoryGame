@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MemoryGame.Areas.Identity.Data;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -16,6 +17,7 @@ namespace MemoryGame.Models
         public string Caption { get; set; }
 
         public string UserId { get; set; }
+        public User User { get; set; }
 
         public ICollection<Record> Records { get; set; }
     }

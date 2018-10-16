@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MemoryGame.Migrations
 {
     [DbContext(typeof(MemoryGameContext))]
-    [Migration("20181016002204_Initial")]
+    [Migration("20181016214828_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -82,12 +82,14 @@ namespace MemoryGame.Migrations
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
+                        .HasColumnName("ID")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Caption")
                         .HasMaxLength(25);
 
-                    b.Property<string>("UserId");
+                    b.Property<string>("UserId")
+                        .IsRequired();
 
                     b.HasKey("ID");
 
@@ -233,14 +235,14 @@ namespace MemoryGame.Migrations
 
             modelBuilder.Entity("MemoryGame.Models.List", b =>
                 {
-                    b.HasOne("MemoryGame.Areas.Identity.Data.User")
-                        .WithMany("Lists")
+                    b.HasOne("MemoryGame.Areas.Identity.Data.User", "User")
+                        .WithMany("List")
                         .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("MemoryGame.Models.Record", b =>
                 {
-                    b.HasOne("MemoryGame.Models.List")
+                    b.HasOne("MemoryGame.Models.List", "List")
                         .WithMany("Records")
                         .HasForeignKey("ListId")
                         .OnDelete(DeleteBehavior.Cascade);

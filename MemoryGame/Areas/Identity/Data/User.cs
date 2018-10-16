@@ -19,6 +19,6 @@ namespace MemoryGame.Areas.Identity.Data
         [StringLength(25, MinimumLength = 3, ErrorMessage = "Last Name should be in range between 3 and 25")]
         [Display(Name = "Last Name")]
         public string LastName { get; set; }
-        public ICollection<List> Lists { get; set; }
+        public ICollection<List> List { get; set; }
     }
 }

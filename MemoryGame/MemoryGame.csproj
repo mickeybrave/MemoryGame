@@ -8,6 +8,8 @@
   <ItemGroup>
     <Compile Remove="Migrations\20181012051304_ConfirmEmailModel.cs" />
     <Compile Remove="Migrations\20181012051304_ConfirmEmailModel.Designer.cs" />
+    <Compile Remove="Migrations\20181016002204_Initial.cs" />
+    <Compile Remove="Migrations\20181016002204_Initial.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
