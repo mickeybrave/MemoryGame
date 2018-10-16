@@ -16,9 +16,6 @@ namespace MemoryGame.Models
         [StringLength(30, MinimumLength = 3, ErrorMessage = "Translation should be in range between 3 and 30")]
         public string Translation { get; set; }
 
-        //public virtual List List { get; set; }
-
-        //[Key, ForeignKey("List")]
         public int ListId { get; set; }
     }
 }

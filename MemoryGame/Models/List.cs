@@ -15,9 +15,6 @@ namespace MemoryGame.Models
 
         public string Caption { get; set; }
 
-        //public virtual User User { get; set; }
-
-        //[Key, ForeignKey("User")]
         public string UserId { get; set; }
 
         public ICollection<Record> Records { get; set; }
