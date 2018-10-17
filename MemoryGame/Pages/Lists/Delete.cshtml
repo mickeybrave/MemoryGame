@@ -5,10 +5,12 @@
     ViewData["Title"] = "Delete List";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
+@{
+    var header = Model.Header +" "+ Model.List.Caption;
+}
+<h2> @header</h2>
 
-<h2>Delete List</h2>
-
-<h3>Are you sure you want to delete this?</h3>
+<h3>Are you sure you want to delete the list @Model.List.Caption?</h3>
 <div>
     <h4>List</h4>
     <hr />
@@ -20,7 +22,7 @@
             @Html.DisplayFor(model => model.List.Caption)
         </dd>
     </dl>
-    
+
     <form method="post">
         <input type="hidden" asp-for="List.ID" />
         <input type="submit" value="Delete" class="btn btn-default" /> |

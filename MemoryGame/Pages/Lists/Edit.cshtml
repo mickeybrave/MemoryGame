@@ -6,7 +6,10 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h2>Edit</h2>
+@{
+    var header = Model.Header + " " + Model.List.Caption;
+}
+<h2> @header</h2>
 
 <h4>List</h4>
 <hr />

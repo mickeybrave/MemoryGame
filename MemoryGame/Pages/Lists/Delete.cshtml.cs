@@ -7,17 +7,15 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using MemoryGame.Models;
 using Microsoft.AspNetCore.Authorization;
+using MemoryGame.Infra;
 
 namespace MemoryGame.Pages.Lists
 {
-    [Authorize]
-    public class DeleteModel : PageModel
+    public class DeleteModel : ApplicationPageBase
     {
-        private readonly MemoryGame.Models.MemoryGameContext _context;
-
-        public DeleteModel(MemoryGame.Models.MemoryGameContext context)
+        public DeleteModel(MemoryGameContext context):base(context)
         {
-            _context = context;
+            Header = "Delete";
         }
 
         [BindProperty]

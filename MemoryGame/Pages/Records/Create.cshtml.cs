@@ -9,9 +9,9 @@ namespace MemoryGame.Pages.Records
     [Authorize]
     public class CreateModel : PageModel
     {
-        private readonly MemoryGame.Models.MemoryGameContext _context;
+        private readonly MemoryGameContext _context;
 
-        public CreateModel(MemoryGame.Models.MemoryGameContext context)
+        public CreateModel(MemoryGameContext context)
         {
             _context = context;
         }

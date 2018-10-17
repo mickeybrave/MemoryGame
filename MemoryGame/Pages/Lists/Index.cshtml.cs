@@ -1,27 +1,34 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using MemoryGame.Models;
-using Microsoft.AspNetCore.Authorization;
+using MemoryGame.Infra;
+using Microsoft.AspNetCore.Identity;
+using MemoryGame.Areas.Identity.Data;
+using System.Linq;
+using System;
 
 namespace MemoryGame.Pages.Lists
 {
-    [Authorize]
-    public class IndexModel : PageModel
-    {
-        private readonly MemoryGameContext _context;
 
-        public IndexModel(MemoryGameContext context)
+    public class IndexModel : ApplicationPageBase
+    {
+        private readonly UserManager<User> _userManager;
+        public IndexModel(MemoryGameContext context, UserManager<User> userManager) : base(context)
         {
-            _context = context;
+            Header = "All Lists";
+            _userManager = userManager;
         }
 
-        public IList<List> List { get;set; }
+        public IList<List> List { get; set; }
 
         public async Task OnGetAsync()
         {
-            List = await _context.List.ToListAsync();
+            var currentUser = await _userManager.GetUserAsync(this.User);
+            if (currentUser == null) throw new UnauthorizedAccessException($"User {this.User.Identity.Name} cannot be found in the database");
+
+            var allLists = await _context.List.ToListAsync();
+            List = allLists != null ? allLists.Where(w => w.UserId == currentUser.Id).ToList() : allLists;
         }
     }
 }

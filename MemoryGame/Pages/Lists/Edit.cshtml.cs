@@ -1,21 +1,23 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using MemoryGame.Models;
-using Microsoft.AspNetCore.Authorization;
+using MemoryGame.Infra;
+using Microsoft.AspNetCore.Identity;
+using MemoryGame.Areas.Identity.Data;
+using System;
 
 namespace MemoryGame.Pages.Lists
 {
-    [Authorize]
-    public class EditModel : PageModel
-    {
-        private readonly MemoryGame.Models.MemoryGameContext _context;
 
-        public EditModel(MemoryGame.Models.MemoryGameContext context)
+    public class EditModel : ApplicationPageBase
+    {
+        private readonly UserManager<User> _userManager;
+        public EditModel(MemoryGameContext context, UserManager<User> userManager) : base(context)
         {
-            _context = context;
+            Header = "Edit";
+            _userManager = userManager;
         }
 
         [BindProperty]
@@ -43,6 +45,9 @@ namespace MemoryGame.Pages.Lists
             {
                 return Page();
             }
+            var currentUser = await _userManager.GetUserAsync(this.User);
+            List.User = currentUser ?? throw new UnauthorizedAccessException($"User {this.User.Identity.Name} cannot be found in the database");
+            List.UserId = currentUser.Id;
 
             _context.Attach(List).State = EntityState.Modified;
 

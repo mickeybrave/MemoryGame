@@ -1,23 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using MemoryGame.Models;
-using Microsoft.AspNetCore.Authorization;
+using MemoryGame.Infra;
+using MemoryGame.Areas.Identity.Data;
+using Microsoft.AspNetCore.Identity;
+using System;
 
 namespace MemoryGame.Pages.Lists
 {
-    [Authorize]
-    public class CreateModel : PageModel
+    public class CreateModel : ApplicationPageBase
     {
-        private readonly MemoryGame.Models.MemoryGameContext _context;
+        private readonly UserManager<User> _userManager;
 
-        public CreateModel(MemoryGame.Models.MemoryGameContext context)
+        public CreateModel(MemoryGameContext context, UserManager<User> userManager) : base(context)
         {
-            _context = context;
+            Header = "Create";
+            _userManager = userManager;
         }
 
         public IActionResult OnGet()
@@ -34,6 +32,10 @@ namespace MemoryGame.Pages.Lists
             {
                 return Page();
             }
+
+            var currentUser = await _userManager.GetUserAsync(this.User);
+            List.User = currentUser ?? throw new UnauthorizedAccessException($"User {this.User.Identity.Name} cannot be found in the database");
+            List.UserId = currentUser.Id;
 
             _context.List.Add(List);
             await _context.SaveChangesAsync();
