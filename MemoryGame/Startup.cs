@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.EntityFrameworkCore;
 
 namespace MemoryGame
 {
@@ -45,6 +46,17 @@ namespace MemoryGame
             services.Configure<AuthMessageSenderOptions>(Configuration);
 
 
+            services.AddMvc()
+                  .AddViewLocalization()
+                  .AddDataAnnotationsLocalization()
+                  //.AddRazorPagesOptions(options =>
+                  //{
+                  //    options.Conventions.AddPageRoute("/Lists/Index",
+                  //        "/{id}");
+                  //    options.Conventions.AddPageRoute("/Lists/Records/Index",
+                  //     "/{id}");
+                  //});
+                  ;
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

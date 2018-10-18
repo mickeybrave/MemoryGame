@@ -22,7 +22,7 @@ namespace MemoryGame.Pages.Lists
 
         public IList<List> List { get; set; }
 
-        public async Task OnGetAsync()
+        public async Task OnGetAsync(int? id)
         {
             var currentUser = await _userManager.GetUserAsync(this.User);
             if (currentUser == null) throw new UnauthorizedAccessException($"User {this.User.Identity.Name} cannot be found in the database");
