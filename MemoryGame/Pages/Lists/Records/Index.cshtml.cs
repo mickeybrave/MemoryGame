@@ -22,9 +22,36 @@ namespace MemoryGame.Pages.Records
         public IList<Record> Record { get; set; }
 
 
-        public async Task OnGetAsync(int? id)
+        //public async Task OnGetAsync(int? id)
+        //{
+        //    var allRecords = await _context.Record.ToListAsync();
+        //    if (allRecords == null)
+        //    {
+        //        throw
+        //    }
+
+        //    Record = await _context.Record.ToListAsync();
+        //}
+
+        public async Task<IActionResult> OnGetAsync(int? id)
         {
-            Record = await _context.Record.ToListAsync();
+            if (id == null)
+            {
+                return NotFound();
+            }
+            var allRecords = await _context.Record.ToListAsync();
+            if (allRecords == null)
+            {
+                return NotFound("No records where found");
+            }
+
+            Record = allRecords.Where(w => w.ListId == id).ToList();
+
+            if (Record == null)
+            {
+                return NotFound();
+            }
+            return Page();
         }
 
     }
