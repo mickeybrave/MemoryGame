@@ -21,27 +21,11 @@ namespace MemoryGame.Pages.Records
 
         public IList<Record> Record { get; set; }
 
-        //public async Task OnGetAsync()
-        //{
-        //    Record = await _context.Record.ToListAsync();
-        //}
-        //[BindProperty(SupportsGet = true)]
-        //public string Id { get; set; }
 
-        public async Task OnGetAsync(int id)
+        public async Task OnGetAsync(int? id)
         {
             Record = await _context.Record.ToListAsync();
         }
 
-
-        //[Microsoft.AspNetCore.Mvc.Route("Lists/{listId}/Records")]
-        //public async Task GetRecordsByList(int? listId)
-        //{
-
-        //    var allRecords = await _context.Record.ToListAsync();
-
-        //    Record = allRecords.Where(w => w.ListId == listId).ToList() ;
-
-        //}
     }
 }
