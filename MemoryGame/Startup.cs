@@ -49,14 +49,11 @@ namespace MemoryGame
             services.AddMvc()
                   .AddViewLocalization()
                   .AddDataAnnotationsLocalization()
-                  //.AddRazorPagesOptions(options =>
-                  //{
-                  //    options.Conventions.AddPageRoute("/Lists/Index",
-                  //        "/{id}");
-                  //    options.Conventions.AddPageRoute("/Lists/Records/Index",
-                  //     "/{id}");
-                  //});
-                  ;
+                   .AddRazorPagesOptions(options =>
+                    {
+                        options.Conventions.AddPageRoute("/Lists/Index", "");
+                    });
+            ;
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
