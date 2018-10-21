@@ -18,14 +18,14 @@ namespace MemoryGame.Pages.Records
         }
         public Record Record { get; set; }
 
-
+        public int ListId { get; set; }
         public async Task<IActionResult> OnGetAsync(int? id, int? listId)
         {
-            if (id == null)
+            if (id == null || ListId == null)
             {
                 return NotFound();
             }
-
+            ListId = listId.Value;
             Record = await _context.Record
                 .FirstOrDefaultAsync(m => m.ID == id && listId == m.ListId);
 

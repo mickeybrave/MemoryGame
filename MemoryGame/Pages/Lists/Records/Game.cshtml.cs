@@ -1,45 +1,41 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using MemoryGame.Infra;
+using MemoryGame.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using MemoryGame.Models;
-using Microsoft.AspNetCore.Authorization;
-using System.Linq;
-using Microsoft.AspNetCore.Mvc;
-using MemoryGame.Infra;
 
-namespace MemoryGame.Pages.Records
+namespace MemoryGame.Pages.Lists.Records
 {
-    [Authorize]
-    public class IndexModel : ApplicationPageBase
+    public class GameModel : ApplicationPageBase
     {
-
-        public IndexModel(MemoryGameContext context) : base(context)
+        public GameModel(MemoryGameContext context) :
+            base(context)
         {
         }
 
         public IList<Record> Record { get; set; }
-        public int ID { get; set; }
-        public async Task<IActionResult> OnGetAsync(int? id, string searchString)
+        public int ListId { get; set; }
+        public async Task<IActionResult> OnGetAsync(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
-            ID = id.Value;
+
+            ListId = id.Value;
             this.Header = (await _context.List
-                  .FirstOrDefaultAsync(a => a.ID == id.Value))
-                     .Caption;
+                .FirstOrDefaultAsync(a => a.ID == id.Value))
+                   .Caption;
 
             var records = from r in _context.Record
                           select r;
 
             records = records.Where(w => w.ListId == id);
 
-            if (!string.IsNullOrEmpty(searchString))
-            {
-                records = records.Where(s => s.Word.Contains(searchString));
-            }
 
             if (records == null)
             {
@@ -53,6 +49,5 @@ namespace MemoryGame.Pages.Records
             }
             return Page();
         }
-
     }
 }

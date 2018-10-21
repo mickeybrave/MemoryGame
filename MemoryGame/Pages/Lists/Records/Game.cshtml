@@ -1,0 +1,48 @@
+﻿@page "/Lists/{id}/Records/Game"
+@model MemoryGame.Pages.Lists.Records.GameModel
+
+@{
+    ViewData["Title"] = "The game for " + Model.Header;
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>The Game</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Record[0].Word)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Record[0].Translation)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Record)
+        {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Word)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Translation)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.ID">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.ID" asp-route-listId="@item.ListId">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.ID">Delete</a>
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>
+
+<div>
+    <a asp-page="./Index" asp-route-id="@Model.ListId">Back to Records</a> |
+    <a asp-page="../Index" >Back to List</a>
+</div>
+
+
