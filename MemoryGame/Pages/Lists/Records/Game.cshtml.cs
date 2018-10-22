@@ -16,9 +16,18 @@ namespace MemoryGame.Pages.Lists.Records
             base(context)
         {
         }
+        #region Fields
+        private int _wrongAtempts = 0;
+        #endregion
 
+        #region Properties
         public IList<Record> Record { get; set; }
         public int ListId { get; set; }
+        public IList<RecordDecorator> AllRecordDecorators { get; set; }
+        public IList<RecordDecorator> GameRecordDecorators { get; set; }
+        #endregion
+
+
         public async Task<IActionResult> OnGetAsync(int? id)
         {
             if (id == null)
@@ -43,11 +52,29 @@ namespace MemoryGame.Pages.Lists.Records
             }
 
             Record = await records.ToListAsync();
+            AllRecordDecorators = Record.Select(s => new RecordDecorator(s)).ToList();
+            var result = Enumerable.Range(0, AllRecordDecorators.Count)
+                .OrderBy(g => Guid.NewGuid()).Take(3).ToArray();
+
+            //GameRecordDecorators
             if (Record == null)
             {
                 return NotFound();
             }
             return Page();
+        }
+
+        public async Task<IActionResult> OnPostAsync()
+        {
+            if (!ModelState.IsValid)
+            {
+                return Page();
+            }
+         
+
+          
+
+            return RedirectToPage("./Index");
         }
     }
 }
