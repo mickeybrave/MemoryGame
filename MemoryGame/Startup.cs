@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
+using MemoryGame.Infra;
 
 namespace MemoryGame
 {
@@ -36,13 +37,12 @@ namespace MemoryGame
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             //Email confirmation
-            // requires
-            // using Microsoft.AspNetCore.Identity.UI.Services;
-            // using WebPWrecover.Services;
             services.AddSingleton<IEmailSender, EmailSender>();
+            services.AddSingleton<IRandomService, RandomService>();
+            services.AddSingleton<ISessionHelper, SessionHelper>();
+            
             services.Configure<AuthMessageSenderOptions>(Configuration);
 
 
@@ -73,7 +73,6 @@ namespace MemoryGame
             app.UseStaticFiles();
             app.UseAuthentication();
             app.UseCookiePolicy();
-
             app.UseMvc();
         }
     }

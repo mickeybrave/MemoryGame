@@ -10,5 +10,9 @@ namespace MemoryGame.Infra
         {
             _record = record;
         }
+
+        public int ID { get { return _record.ID; } }
+        public string Word { get { return _record.Word; } }
+        public string Translation { get { return _record.Translation; } }
     }
 }
