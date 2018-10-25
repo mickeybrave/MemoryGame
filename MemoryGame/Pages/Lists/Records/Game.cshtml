@@ -5,20 +5,308 @@
     ViewData["Title"] = "The game for " + Model.Header;
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
+@using System.Net;
+@using Newtonsoft.Json;
+@using Newtonsoft.Json.Linq;
+<script>
+    var allRecordDecorators;
+    var gameRecordDecorators ;
+    var recordToGuess;
+    var isValidGuess=false;
+
+    var _wrongGuesses=0;
+    const constMaxWrongGuesses = 3;
+
+    $(document).ready(function () {
+        //$('.blink').blink({
+        //    delay: 200
+        //});
+        //$('#stop').click(function () {
+        //    $('.blink').unblink();
+        //});
+        //$('#stop2').click(function () {
+        //    $('.blink2').unblink();
+        //});
+
+        //$("#clickme").click(function () {
+        //    $("#book").fadeOut(3000, function () {
+        //        // Animation complete.
+        //    });
+        //});
+        $("#success").on('load', function () {
+            console.log("#success loaded")
+            $("#success").blink({ delay: 200 });
+            $("#success").fadeOut(3000, function () {
+                // Animation complete.
+            });
+        });
+
+        $("#failure").on('load', function () {
+            console.log("#failure loaded")
+            $("#failure").blink({ delay: 200 });
+            $("#failure").fadeOut(3000, function () {
+                // Animation complete.
+            });
+        });
+
+        function getAllGuessedIndexes(arr) {
+            var indexes = [];
+            for (var i = 0; i < arr.length; i++) {
+                if (arr[i].isGuessed === true) {
+                    indexes.push(i);
+                }
+            }
+            return indexes;
+        }
+        //JSON.stringify(
+        function getAllGuessedCount(arr) {
+            //console.log("gameArr is " + JSON.stringify(arr));
+            var count = 0;
+            for (var i = 0; i < arr.length; i++) {
+                if (arr[i].isGuessed === true) {
+                    //console.log("gameArr is " + JSON.stringify(arr[i]));
+                    count++;
+                }
+            }
+            return count;
+        }
+
+        function buildGameArray(arr, indexesArr) {
+            var gameArr = [];
+            console.log("arr is " + JSON.stringify(arr));
+            console.log("indexesArr is " + JSON.stringify(indexesArr));
+            for (var i = 0; i < indexesArr.length; i++) {
+                for (var j = 0; j < arr.length; j++) {
+                    if (j === indexesArr[i]) {
+                        console.log(arr[j])
+                        gameArr.push(arr[j]);
+                    }
+                }
+            }
+            return gameArr;
+        }
+
+
+        function updateAllRecordsState(arr, id, state) {
+            for (var i = 0; i < arr.length; i++) {
+                if (id === arr[i].id) {
+                    arr[i].isGuessed = state;
+                    }
+            }
+        }
+
+        function getRandomArr(arr,min, max, count, excludeArr) {
+            if (typeof arr === 'undefined' || arr === null) {
+                arr = [];
+                console.log('arr: '+arr);
+            }
+            var randNum = Math.floor(Math.random() * (max - min + 1)) + min;
+
+            if (!arr.includes(randNum) && !excludeArr.includes(randNum))
+                arr.push(randNum);
+
+            if (arr.length < count)
+                return getRandomArr(arr, min, max, count, excludeArr);
+            else
+                return arr;
+        }
+        function onHandleClick() {
+            console.log("game record id is " + recordToGuess.id)
+            console.log("you choose record with id " + this.id)
+            var count = getAllGuessedCount(allRecordDecorators);
+
+            if (recordToGuess.id == this.id) {//correct
+                if (count == allRecordDecorators.length) {//you won!
+                    @* @Model.GameOver(true) *@
+                     //;
+                    console.log("game over you won. count is " + count + " allRecordDecorators.length is " + allRecordDecorators.length)
+                }
+                $("#h1Failure").hide();
+                $("#h1Success").show();
+                $("#h1Success").fadeOut(3000, function () {
+                    // Animation complete.
+                });
+
+                updateAllRecordsState(allRecordDecorators, parseInt(this.id), true);
+            }
+            else {//wrong
+                if (constMaxWrongGuesses == _wrongGuesses) {//game over
+                       @* @Model.GameOver(false) *@
+                    console.log("game over you loose. count is " + count + " allRecordDecorators.length is " + allRecordDecorators.length)
+
+                }
+                _wrongGuesses++;
+                $("#h1Failure").show();
+                $("#h1Success").hide();
+                $("#h1Failure").fadeOut(3000, function () {
+                    // Animation complete.
+                });
+            }
+            console.log("allRecordDecorators are " + allRecordDecorators);
+
+
+            console.log("getAllGuessedCount is " + count);
+            console.log("excludeIdexes are " + excludeIdexes);
+            var excludeIdexes = getAllGuessedIndexes(allRecordDecorators);
+            var randomIndexesArr = getRandomArr(null, 0, allRecordDecorators.length, 3, excludeIdexes)
+            var gameArr = buildGameArray(allRecordDecorators, randomIndexesArr);
+            console.log("gameArr is " + JSON.stringify(gameArr));
+            var indexForGameRecord = getRandomArr(null, 0, 2, 1, [])[0];
+            console.log("indexForGameRecord is " + indexForGameRecord);
+            recordToGuess = gameArr[indexForGameRecord];
+            buildScreen(gameArr);
+
+        }
+
+        function buildScreen(gameArr) {
+
+            //clear the screen and define new records
+            var myNode = document.getElementById("content");
+            while (myNode.firstChild) {
+                myNode.removeChild(myNode.firstChild);
+            }
+            //initializing - first time
+            if (typeof gameArr === 'undefined' || gameArr === null) {
+                $("#h1Failure").hide();
+                $("#h1Success").hide();
+                $("#h1Failure").blink({ delay: 200 });
+                $("#h1Success").blink({ delay: 200 });
+
+                allRecordDecorators = @Html.Raw(Json.Serialize(Model.AllRecordDecorators));
+                console.log("allRecordDecorators are " + JSON.stringify(allRecordDecorators));
+
+                gameRecordDecorators = @Html.Raw(Json.Serialize(Model.GameRecordDecorators));
+                console.log("gameRecordDecorators are " + JSON.stringify(gameRecordDecorators));
+
+                recordToGuess = @Html.Raw(Json.Serialize(Model.RecordToGuess));
+                console.log("recordToGuess is " + JSON.stringify(recordToGuess));
+            }
+            else {
+                gameRecordDecorators = gameArr;
+
+            }
+
+            var label=    document.getElementById("labelRecordToGuess")
+            label.innerHTML  = recordToGuess.word;
+            for (var i = 0; i < gameRecordDecorators.length; i++) {
+
+                var element = document.createElement("input");
+                //Assign different attributes to the element.
+                element.setAttribute("type", "button");
+                element.setAttribute("class", "btn btn-light btn-block submit");
+                element.setAttribute("value", gameRecordDecorators[i].translation);
+                element.setAttribute("id", gameRecordDecorators[i].id.toString());
+                element.setAttribute("test", gameRecordDecorators[i].id);
+                var content = document.getElementById("content");
+                //Append the element in page (in span).
+                content.appendChild(element);
+                content.appendChild(document.createElement("br"));
+            }
+            //describe in report problem with click
+            $('.submit').click(onHandleClick);
+        }
+        $(window).on('load', buildScreen(null));
+
+
+
+
+
+
+        //$(document.getElementById('submit')).on('click', function () {
+        //    alert('failure');
+        //});
+
+        //$(document.getElementById('submit')).on('click', function () {
+        //    alert('success');
+        //});
+
+        //$("#success").load(function () {
+        //    $("#success").blink({ delay: 200 });
+        //    $("#success").fadeOut(3000, function () {
+        //        // Animation complete.
+        //    });
+        //});
+
+        //$("#failure").load(function () {
+        //    $("#failure").blink({ delay: 200 });
+        //    $("#failure").fadeOut(3000, function () {
+        //        // Animation complete.
+        //    });
+        //});
+
+        //$('#success').blink({
+        //    delay: 200
+        //});
+
+        //$('#failure').blink({
+        //    delay: 200
+        //});
+
+    });
+</script>
+
 
 <h1>The Game</h1>
 
-<h2>@Model.RecordToGuess.Word</h2>
-<form method="post">
-    <div class="span2">
-        @foreach (var item in Model.GameRecordDecorators)
+@*<h2>@Model.RecordToGuess.Word</h2>*@
+
+@*<h2 id="labelRecordToGuess"></h2>*@
+
+<h1 id="labelRecordToGuess" style="text-align:left;float:left;">Title</h1>
+
+<h1 id="h1Success" style="text-align:right;float:right;"> <span id="success" class="label label-success">Correct!</span> </h1>
+<h1 id="h1Failure" style="text-align:right;float:right;"> <span id="failure" class="label label-danger">Wrong!</span> </h1>
+
+
+
+@*@if (Model.IsValidGuess != null)
+    {
+        if (Model.IsValidGuess == true)
         {
-            <input type="submit"
-                   value="@item.Translation"
-                   class="btn btn-light btn-block"
-                   asp-page-handler="ApplyGuess"
-                   asp-route-itemId="@item.ID" /> <br />
+            <h1> <span id="success" class="label label-success">Correct!</span> </h1>
         }
+        else
+        {
+            <h1> <span id="failure" class="label label-danger">Wrong!</span> </h1>
+        }
+    }*@
+
+@*style="@(Model.booleanVariable ? "display:block" : "display:none"*@
+
+@*<h1 id="h1Success"> <span id="success" class="label label-success">Correct!</span> </h1>
+    <h1 id="h1Failure"> <span id="failure" class="label label-danger">Wrong!</span> </h1>*@
+
+
+@*<h1 style="@(Model.IsValidGuess!=null && Model.IsValidGuess==true ? "display:block" : "display:none")"> <span id="success" class="label label-success">Correct!</span> </h1>
+    <h1 style="@(Model.IsValidGuess!=null && Model.IsValidGuess==false ? "display:block" : "display:none")"> <span id="failure" class="label label-danger">Wrong!</span> </h1>*@
+
+@*<div style="label label-success @(Model.IsValidGuess ? "display:block" : "display:none")">Correct!</div>
+    <div style="@(Model.IsValidGuess ? "display:block" : "display:none")">Wrong!</div>*@
+
+@*<span class="blink">this</span> is some <span class="blink blink2">blinking</span> text.
+
+    <input type="button" value="Stop" id="stop" />
+    <input type="button" value="Stop 2" id="stop2" />
+
+    <button id="clickme">
+        Click here
+    </button>
+
+    <button id="book"  width="100" height="123">BUTTON</button>*@
+
+
+<form method="post">
+    <div class="span2" id="content">
+        @*@foreach (var item in Model.GameRecordDecorators)
+            {
+                <input type="submit"
+                       value="@item.Translation"
+                       class="btn btn-light btn-block"
+                       id="submit"
+                       asp-page-handler="ApplyGuess"
+                       asp-route-itemId="@item.ID" /> <br />
+            }*@
+
     </div>
 </form>
 

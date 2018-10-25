@@ -9,6 +9,7 @@ namespace MemoryGame.Infra
     {
         void AddRenewItem(string key, object item);
         object GetItem(string key);
+        void RemoveItem(string key);
     }
     public class SessionHelper : ISessionHelper
     {
@@ -32,6 +33,14 @@ namespace MemoryGame.Infra
                 return _sessionBag[key];
             }
             return null;
+        }
+
+        public void RemoveItem(string key)
+        {
+            if (_sessionBag.Keys.Contains(key))
+            {
+                 _sessionBag.Remove(key);
+            }
         }
     }
 }
