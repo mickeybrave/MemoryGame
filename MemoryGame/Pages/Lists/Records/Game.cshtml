@@ -46,6 +46,7 @@
         const h1GameOverId = "h1GameOver";
         const gameOverSpanId = "gameOverSpan";
         const h1ResultId = "h1Result";
+        const config = { isFromForeignLanguage: false };
         //#endregion
 
           //#region UI
@@ -143,14 +144,22 @@
             }
 
             var label = document.getElementById(labelRecordToGuessId)
-            label.innerHTML  = recordToGuess.word;
+
+            const recordToGuessLabelContent = config.isFromForeignLanguage === true ?
+                recordToGuess.word : recordToGuess.translation;
+
+            label.innerHTML = recordToGuessLabelContent;
             for (var i = 0; i < gameRecordDecorators.length; i++) {
 
                 var element = document.createElement("input");
                 //Assign different attributes to the element.
                 element.setAttribute("type", "button");
                 element.setAttribute("class", "btn btn-info btn-block submit");
-                element.setAttribute("value", gameRecordDecorators[i].translation);
+                const buttonContent = config.isFromForeignLanguage === true ?
+                    gameRecordDecorators[i].translation : gameRecordDecorators[i].word;
+
+                element.setAttribute("value", buttonContent);
+
                 element.setAttribute("id", gameRecordDecorators[i].id.toString());
                 element.setAttribute("test", gameRecordDecorators[i].id);
                 var content = document.getElementById("content");
@@ -163,12 +172,6 @@
         }
 
           //#endregion
-
-
-
-
-
-
 
         //#region BL
         function getAllGuessedIndexes(arr) {
