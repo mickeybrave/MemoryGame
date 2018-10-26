@@ -15,6 +15,8 @@ namespace MemoryGame.Models
 
         public DbSet<Record> Record { get; set; }
 
+        public DbSet<Config> Config { get; set; }
+
         public MemoryGameContext(DbContextOptions<MemoryGameContext> options)
             : base(options)
         {
@@ -27,18 +29,29 @@ namespace MemoryGame.Models
             builder.Entity<List>(entity =>
             {
                 entity.HasIndex(e => e.UserId);
-
                 entity.Property(e => e.ID).HasColumnName("ID");
-
                 entity.Property(e => e.Caption).HasMaxLength(25);
-
                 entity.Property(e => e.UserId).IsRequired();
-
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.List)
-                    .HasForeignKey(d => d.UserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull);
+                        .HasForeignKey(d => d.UserId)
+                            .OnDelete(DeleteBehavior.ClientSetNull);
+
             });
+
+            builder.Entity<Config>(entity =>
+            {
+                entity.HasIndex(e => e.UserId);
+                entity.Property(e => e.ID).HasColumnName("ID");
+                entity.Property(e => e.UserId).IsRequired();
+            });
+
+
+            builder.Entity<User>()
+             .HasOne(p => p.Config)
+                 .WithOne(i => i.User)
+                    .HasForeignKey<Config>(b => b.UserId)
+                        .OnDelete(DeleteBehavior.ClientSetNull);
         }
     }
 }

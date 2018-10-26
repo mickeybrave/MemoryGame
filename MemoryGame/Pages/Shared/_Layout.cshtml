@@ -1,4 +1,7 @@
-﻿@using System.Web.Optimization
+﻿@using Microsoft.AspNetCore.Identity
+@using MemoryGame.Areas.Identity.Data
+
+@inject UserManager<User> UserManager
 <!DOCTYPE html>
 <html>
 <head>
@@ -38,16 +41,6 @@
     </environment>
 </head>
 <body>
-    @*@Scripts.Render("~/bundles/jquery")
-    @Scripts.Render("~/bundles/bootstrap")
-    @RenderSection("scripts", required: false)*@
-
-    @*@section Scripts{
-        <script src="@System.Web.Optimization.BundleTable.Bundles.ResolveBundleUrl("~/lib/jquery")">
-
-        </script>
-    }*@
-
     <nav class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
@@ -64,8 +57,11 @@
                     <li><a asp-page="/Lists/Index">Home</a></li>
                     <li><a asp-page="/About">About</a></li>
                     <li><a asp-page="/Contact">Contact</a></li>
+
                     @if (User.Identity.IsAuthenticated)
                     {
+                        var user = await UserManager.GetUserAsync(User);
+                        <li><a asp-page="/Configuration" asp-route-userId="@user.Id">Configuration</a></li>
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown"
                                role="button" aria-haspopup="true" aria-expanded="false">Lists<span class="caret"></span></a>
@@ -91,7 +87,7 @@
         </footer>
     </div>
 
-    
+
 
     @RenderSection("Scripts", required: false)
 </body>

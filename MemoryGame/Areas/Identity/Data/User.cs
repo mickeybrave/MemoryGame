@@ -20,5 +20,7 @@ namespace MemoryGame.Areas.Identity.Data
         [Display(Name = "Last Name")]
         public string LastName { get; set; }
         public ICollection<List> List { get; set; }
+
+        public Config Config { get; set; }
     }
 }
