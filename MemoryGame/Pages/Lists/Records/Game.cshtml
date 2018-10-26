@@ -8,6 +8,25 @@
 @using System.Net;
 @using Newtonsoft.Json;
 @using Newtonsoft.Json.Linq;
+   <style>
+       .div-table {
+           display: table;
+           width: 100%;
+       }
+       .div-table-row {
+           display: table-row;
+           clear: both;
+          
+       }
+       .div-table-col {
+           float: left;
+           display: table-column;
+           width: 50%;
+       }
+       .div {
+           float: right;
+       }
+</style>
 <script>
     var allRecordDecorators;
     var gameRecordDecorators ;
@@ -125,9 +144,10 @@
                 //$("#h1Failure").show();
                 //$("#h1Success").hide();
                 span.className = "label label-danger";
-                span.innerHTML = "You loose! Your score is " + allGuessedCount+". Maybe next time";
+                span.innerHTML = "Game Over. Your score is " + allGuessedCount+".";
             }
         }
+
         function onHandleClick() {
             console.log("game record id is " + recordToGuess.id)
             console.log("you choose record with id " + this.id)
@@ -137,7 +157,7 @@
                 if (count == allRecordDecorators.length-1) {//you won!
                     @* @Model.GameOver(true) *@
                      //;
-                    console.log("game over you won. count is " + count + " allRecordDecorators.length is " + allRecordDecorators.length)
+                    console.log("game over you won. count is " + count + " allRecordDecorators.length is " + allRecordDecorators.length-1)
                     endTheGame(true);
                     return;
                 }
@@ -152,7 +172,7 @@
             else {//wrong
                 if (constMaxWrongGuesses === _wrongGuesses) {//game over
                        @* @Model.GameOver(false) *@
-                    console.log("game over you loose. count is " + count + " allRecordDecorators.length is " + allRecordDecorators.length)
+                    console.log("game over you loose. count is " + count + " allRecordDecorators.length is " + allRecordDecorators.length-1)
                     endTheGame(false);
                     return;
                 }
@@ -171,7 +191,8 @@
             console.log("excludeIdexes are " + guessedIdexes);
 
             var indexGuessRecordUnique = getRandomArr(null, 0, allRecordDecorators.length - 1, 1, guessedIdexes)[0];
-            var indexsForGameRecords = getRandomArr(null, 0, allRecordDecorators.length - 1, 3, [{ indexGuessRecordUnique }]);
+            var indexsForGameRecords = getRandomArr(null, 0, allRecordDecorators.length - 1, 3, [ indexGuessRecordUnique ]);
+
             var indexForGameRecordInGameArray = getRandomArr(null, 0, 2, 1, [])[0];
 
             indexsForGameRecords[indexForGameRecordInGameArray] = indexGuessRecordUnique;
@@ -221,7 +242,7 @@
                 var element = document.createElement("input");
                 //Assign different attributes to the element.
                 element.setAttribute("type", "button");
-                element.setAttribute("class", "btn btn-light btn-block submit");
+                element.setAttribute("class", "btn btn-info btn-block submit");
                 element.setAttribute("value", gameRecordDecorators[i].translation);
                 element.setAttribute("id", gameRecordDecorators[i].id.toString());
                 element.setAttribute("test", gameRecordDecorators[i].id);
@@ -243,16 +264,32 @@
 <h1>The Game</h1>
 
 
-<h1 id="labelRecordToGuess" style="text-align:left;float:left;">Title</h1>
-<h1 id="h1GameOver" style="text-align:right;float:right;"> <span id="gameOverSpan"></span> </h1>
-
-<h1 id="h1Success" style="text-align:right;float:right;"> <span id="success" class="label label-success">Correct!</span> </h1>
-<h1 id="h1Failure" style="text-align:right;float:right;"> <span id="failure" class="label label-danger">Wrong!</span> </h1>
 
 
-<div id="content">
+
+<div class="div-table">
+    <div class="div-table-row">
+        <div class="div-table-col">
+            <h1 id="labelRecordToGuess">Title</h1>
+            <h1 id="h1GameOver"> <span id="gameOverSpan"></span> </h1>
+        </div>
+        <div class="div-table-col">
+            <div class="div">
+                <h1 id="h1Success"> <span id="success" class="label label-success">Correct!</span> </h1>
+                <h1 id="h1Failure"> <span id="failure" class="label label-danger">Wrong!</span> </h1>
+            </div>
+            </div>
+    </div>
+    <div class="div-table-row">
+        <div id="content">
+
+        </div>
+    </div>
+
 
 </div>
+
+
 <div>
     <a asp-page="./Index" asp-route-id="@Model.ListId">Back to Records</a> |
     <a asp-page="../Index">Back to List</a> |
