@@ -38,21 +38,7 @@
 
     $(document).ready(function () {
 
-        $("#success").on('load', function () {
-            console.log("#success loaded")
-            $("#success").blink({ delay: 200 });
-            $("#success").fadeOut(3000, function () {
-                // Animation complete.
-            });
-        });
-
-        $("#failure").on('load', function () {
-            console.log("#failure loaded")
-            $("#failure").blink({ delay: 200 });
-            $("#failure").fadeOut(3000, function () {
-                // Animation complete.
-            });
-        });
+       
 
         function getAllGuessedIndexes(arr) {
             var indexes = [];
@@ -114,20 +100,13 @@
                 return arr;
 
 
-            //while(arr.length < count) {
-            //    var randNum = Math.floor(Math.random() * (max - min + 1)) + min;
-            //    if (!arr.includes(randNum) && !excludeArr.includes(randNum))
-            //        arr.push(randNum);
-            //}
-
-            //return arr;
         }
 
         function endTheGame(isWon){
 
-            var myNode = document.getElementById("content");
-            while (myNode.firstChild) {
-                myNode.removeChild(myNode.firstChild);
+            var contentDiv = document.getElementById("content");
+            while (contentDiv.firstChild) {
+                contentDiv.removeChild(contentDiv.firstChild);
             }
             $("#labelRecordToGuess").hide();
             $("#h1GameOver").show();
@@ -153,38 +132,50 @@
             console.log("you choose record with id " + this.id)
             var count = getAllGuessedCount(allRecordDecorators);
 
+            //<h1 id="h1Result"> <span id="spanResult"></span> </h1>
+            var resultContentDiv = document.getElementById("resultContent");
+
+            while (resultContentDiv.firstChild) {
+                resultContentDiv.removeChild(resultContentDiv.firstChild);
+            }
+
+            var h1 = document.createElement("h1");
+            var span= document.createElement("span");
+
+            h1.id = "h1Result";
+            h1.appendChild(span);
+            resultContentDiv.appendChild(h1);
+
+
+
+            //$("#spanResult").fadeIn(1);
+           
+            $("#h1Result").blink({ delay: 200 });
+            $("#h1Result").fadeOut(3000);
+
             if (recordToGuess.id == this.id) {//correct
+                updateAllRecordsState(allRecordDecorators, parseInt(this.id), true);
                 if (count == allRecordDecorators.length-1) {//you won!
-                    @* @Model.GameOver(true) *@
-                     //;
                     console.log("game over you won. count is " + count + " allRecordDecorators.length is " + allRecordDecorators.length-1)
                     endTheGame(true);
                     return;
                 }
-                $("#h1Failure").hide();
-                $("#h1Success").show();
-                $("#h1Success").fadeOut(3000, function () {
-                    // Animation complete.
-                });
-
-                updateAllRecordsState(allRecordDecorators, parseInt(this.id), true);
+                
+                span.className = "label label-success";
+                span.innerHTML = "Correct!";
             }
             else {//wrong
                 if (constMaxWrongGuesses === _wrongGuesses) {//game over
-                       @* @Model.GameOver(false) *@
                     console.log("game over you loose. count is " + count + " allRecordDecorators.length is " + allRecordDecorators.length-1)
                     endTheGame(false);
                     return;
                 }
                 _wrongGuesses++;
-                $("#h1Failure").show();
-                $("#h1Success").hide();
-                $("#h1Failure").fadeOut(3000, function () {
-                    // Animation complete.
-                });
+                span.className = "label label-danger";
+                span.innerHTML = "Wrong!";
             }
             //console.log("allRecordDecorators are " + allRecordDecorators);
-
+           
 
             console.log("getAllGuessedCount is " + count);
             var guessedIdexes = getAllGuessedIndexes(allRecordDecorators);
@@ -209,16 +200,13 @@
 
         function buildScreen(gameArr) {
             //clear the screen and define new records
-            var myNode = document.getElementById("content");
-            while (myNode.firstChild) {
-                myNode.removeChild(myNode.firstChild);
+            var contentDiv = document.getElementById("content");
+            while (contentDiv.firstChild) {
+                contentDiv.removeChild(contentDiv.firstChild);
             }
             //initializing - first time
             if (typeof gameArr === 'undefined' || gameArr === null) {
-                $("#h1Failure").hide();
-                $("#h1Success").hide();
-                $("#h1Failure").blink({ delay: 200 });
-                $("#h1Success").blink({ delay: 200 });
+             
                 $("#labelRecordToGuess").show();
                 $("#h1GameOver").hide();
 
@@ -274,9 +262,11 @@
             <h1 id="h1GameOver"> <span id="gameOverSpan"></span> </h1>
         </div>
         <div class="div-table-col">
-            <div class="div">
-                <h1 id="h1Success"> <span id="success" class="label label-success">Correct!</span> </h1>
-                <h1 id="h1Failure"> <span id="failure" class="label label-danger">Wrong!</span> </h1>
+            <div class="div" id="resultContent">
+                @*<h1 id="h1Success"> <span id="success" class="label label-success">Correct!</span> </h1>
+        <h1 id="h1Failure"> <span id="failure" class="label label-danger">Wrong!</span> </h1>*@
+
+                @*<h1 id="h1Result"> <span id="spanResult"></span> </h1>*@
             </div>
             </div>
     </div>
