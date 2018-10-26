@@ -8,131 +8,52 @@
 @using System.Net;
 @using Newtonsoft.Json;
 @using Newtonsoft.Json.Linq;
-   <style>
-       .div-table {
-           display: table;
-           width: 100%;
-       }
-       .div-table-row {
-           display: table-row;
-           clear: both;
-          
-       }
-       .div-table-col {
-           float: left;
-           display: table-column;
-           width: 50%;
-       }
-       .div {
-           float: right;
-       }
+<style>
+    .div-table {
+        display: table;
+        width: 100%;
+    }
+
+    .div-table-row {
+        display: table-row;
+        clear: both;
+    }
+
+    .div-table-col {
+        float: left;
+        display: table-column;
+        width: 50%;
+    }
+
+    .div {
+        float: right;
+    }
 </style>
 <script>
-    var allRecordDecorators;
-    var gameRecordDecorators ;
-    var recordToGuess;
-    var isValidGuess=false;
 
-    var _wrongGuesses=0;
-    const constMaxWrongGuesses = 3;
+
+
 
     $(document).ready(function () {
 
-       
+        //#region Fields
+        var allRecordDecorators;
+        var gameRecordDecorators;
+        var recordToGuess;
+        var _wrongGuesses = 0;
+        const constMaxWrongGuesses = 3;
+        const labelRecordToGuessId = "labelRecordToGuess";
+        const h1GameOverId = "h1GameOver";
+        const gameOverSpanId = "gameOverSpan";
+        const h1ResultId = "h1Result";
+        //#endregion
 
-        function getAllGuessedIndexes(arr) {
-            var indexes = [];
-            for (var i = 0; i < arr.length; i++) {
-                if (arr[i].isGuessed === true) {
-                    indexes.push(i);
-                }
-            }
-            return indexes;
-        }
-        function getAllGuessedCount(arr) {
-            var count = 0;
-            for (var i = 0; i < arr.length; i++) {
-                if (arr[i].isGuessed === true) {
-                    count++;
-                }
-            }
-            return count;
-        }
-
-        function buildGameArray(arr, indexesArr) {
-            var gameArr = [];
-            //console.log("arr is " + JSON.stringify(arr));
-            //console.log("indexesArr is " + JSON.stringify(indexesArr));
-            for (var i = 0; i < indexesArr.length; i++) {
-                for (var j = 0; j < arr.length; j++) {
-                    if (j === indexesArr[i]) {
-                        console.log("added to game array: "+arr[j])
-                        gameArr.push(arr[j]);
-                    }
-                }
-            }
-            return gameArr;
-        }
-
-
-        function updateAllRecordsState(arr, id, state) {
-            for (var i = 0; i < arr.length; i++) {
-                if (id === arr[i].id) {
-                    arr[i].isGuessed = state;
-                    }
-            }
-        }
-
-        function getRandomArr(arr,min, max, count, excludeArr) {
-            if (typeof arr === 'undefined' || arr === null) {
-                arr = [];
-                console.log('arr: '+arr);
-            }
-
-            var randNum = Math.floor(Math.random() * (max - min + 1)) + min;
-
-            if (!arr.includes(randNum) && !excludeArr.includes(randNum))
-                arr.push(randNum);
-
-            if (arr.length < count)
-                return getRandomArr(arr, min, max, count, excludeArr);
-            else
-                return arr;
-
-
-        }
-
-        function endTheGame(isWon){
-
-            var contentDiv = document.getElementById("content");
-            while (contentDiv.firstChild) {
-                contentDiv.removeChild(contentDiv.firstChild);
-            }
-            $("#labelRecordToGuess").hide();
-            $("#h1GameOver").show();
-            var span = document.getElementById("gameOverSpan");
-            var allGuessedCount = getAllGuessedCount(allRecordDecorators);
-            if (isWon) {
-                //$("#h1Success").show();
-                //$("#h1Failure").hide();
-
-                span.className = "label label-success";
-                span.innerHTML = "You won! Your score is " + allGuessedCount;
-            }
-            else {
-                //$("#h1Failure").show();
-                //$("#h1Success").hide();
-                span.className = "label label-danger";
-                span.innerHTML = "Game Over. Your score is " + allGuessedCount+".";
-            }
-        }
-
+          //#region UI
         function onHandleClick() {
             console.log("game record id is " + recordToGuess.id)
             console.log("you choose record with id " + this.id)
             var count = getAllGuessedCount(allRecordDecorators);
 
-            //<h1 id="h1Result"> <span id="spanResult"></span> </h1>
             var resultContentDiv = document.getElementById("resultContent");
 
             while (resultContentDiv.firstChild) {
@@ -140,33 +61,29 @@
             }
 
             var h1 = document.createElement("h1");
-            var span= document.createElement("span");
+            var span = document.createElement("span");
 
-            h1.id = "h1Result";
+            h1.id = h1ResultId;
             h1.appendChild(span);
             resultContentDiv.appendChild(h1);
 
-
-
-            //$("#spanResult").fadeIn(1);
-           
-            $("#h1Result").blink({ delay: 200 });
-            $("#h1Result").fadeOut(3000);
+            $("#" + h1ResultId).blink({ delay: 200 });
+            $("#" + h1ResultId).fadeOut(3000);
 
             if (recordToGuess.id == this.id) {//correct
                 updateAllRecordsState(allRecordDecorators, parseInt(this.id), true);
-                if (count == allRecordDecorators.length-1) {//you won!
-                    console.log("game over you won. count is " + count + " allRecordDecorators.length is " + allRecordDecorators.length-1)
+                if (count == allRecordDecorators.length - 1) {//you won!
+                    console.log("game over you won. count is " + count + " allRecordDecorators.length is " + allRecordDecorators.length - 1)
                     endTheGame(true);
                     return;
                 }
-                
+
                 span.className = "label label-success";
                 span.innerHTML = "Correct!";
             }
             else {//wrong
                 if (constMaxWrongGuesses === _wrongGuesses) {//game over
-                    console.log("game over you loose. count is " + count + " allRecordDecorators.length is " + allRecordDecorators.length-1)
+                    console.log("game over you loose. count is " + count + " allRecordDecorators.length is " + allRecordDecorators.length - 1)
                     endTheGame(false);
                     return;
                 }
@@ -174,28 +91,31 @@
                 span.className = "label label-danger";
                 span.innerHTML = "Wrong!";
             }
-            //console.log("allRecordDecorators are " + allRecordDecorators);
-           
 
             console.log("getAllGuessedCount is " + count);
-            var guessedIdexes = getAllGuessedIndexes(allRecordDecorators);
+            const gameParameters = buildGameParameters(allRecordDecorators);
+            recordToGuess = gameParameters.recordToGuess;
+            buildScreen(gameParameters.gameArr);
+        }
+
+        function buildGameParameters(allRecords) {
+            const guessedIdexes = getAllGuessedIndexes(allRecords);
             console.log("excludeIdexes are " + guessedIdexes);
 
-            var indexGuessRecordUnique = getRandomArr(null, 0, allRecordDecorators.length - 1, 1, guessedIdexes)[0];
-            var indexsForGameRecords = getRandomArr(null, 0, allRecordDecorators.length - 1, 3, [ indexGuessRecordUnique ]);
+            const indexGuessRecordUnique = getRandomArr(null, 0, allRecords.length - 1, 1, guessedIdexes)[0];
+            const indexsForGameRecords = getRandomArr(null, 0, allRecords.length - 1, 3, [indexGuessRecordUnique]);
 
-            var indexForGameRecordInGameArray = getRandomArr(null, 0, 2, 1, [])[0];
+            const indexForGameRecordInGameArray = getRandomArr(null, 0, 2, 1, [])[0];
 
             indexsForGameRecords[indexForGameRecordInGameArray] = indexGuessRecordUnique;
 
-            var gameArr = buildGameArray(allRecordDecorators, indexsForGameRecords);
-
-
+            const gameArr = buildGameArray(allRecords, indexsForGameRecords);
             console.log("gameArr is " + JSON.stringify(gameArr));
 
             console.log("indexGuessRecordUnique is " + indexGuessRecordUnique);
-            recordToGuess = allRecordDecorators[indexGuessRecordUnique];
-            buildScreen(gameArr);
+            const  recordToGuess = allRecords[indexGuessRecordUnique];
+
+            return { gameArr, recordToGuess };
         }
 
         function buildScreen(gameArr) {
@@ -206,24 +126,23 @@
             }
             //initializing - first time
             if (typeof gameArr === 'undefined' || gameArr === null) {
-             
-                $("#labelRecordToGuess").show();
-                $("#h1GameOver").hide();
 
-                allRecordDecorators = @Html.Raw(Json.Serialize(Model.AllRecordDecorators));
+                $("#" + labelRecordToGuessId).show();
+                $("#" + h1GameOverId).hide();
+
+                allRecordDecorators = @Html.Raw(Json.Serialize(Model.AllRecordDecorators));              
                 console.log("allRecordDecorators are " + JSON.stringify(allRecordDecorators));
-
-                gameRecordDecorators = @Html.Raw(Json.Serialize(Model.GameRecordDecorators));
+                const gameParameters = buildGameParameters(allRecordDecorators);
+                recordToGuess = gameParameters.recordToGuess;
+                gameRecordDecorators = gameParameters.gameArr;
                 console.log("gameRecordDecorators are " + JSON.stringify(gameRecordDecorators));
-
-                recordToGuess = @Html.Raw(Json.Serialize(Model.RecordToGuess));
                 console.log("recordToGuess is " + JSON.stringify(recordToGuess));
             }
             else {
                 gameRecordDecorators = gameArr;
             }
 
-            var label=document.getElementById("labelRecordToGuess")
+            var label = document.getElementById(labelRecordToGuessId)
             label.innerHTML  = recordToGuess.word;
             for (var i = 0; i < gameRecordDecorators.length; i++) {
 
@@ -242,6 +161,98 @@
             //describe in report problem with click
             $('.submit').click(onHandleClick);
         }
+
+          //#endregion
+
+
+
+
+
+
+
+        //#region BL
+        function getAllGuessedIndexes(arr) {
+            var indexes = [];
+            for (var i = 0; i < arr.length; i++) {
+                if (arr[i].isGuessed === true) {
+                    indexes.push(i);
+                }
+            }
+            return indexes;
+        }
+
+        function getAllGuessedCount(arr) {
+            var count = 0;
+            for (var i = 0; i < arr.length; i++) {
+                if (arr[i].isGuessed === true) {
+                    count++;
+                }
+            }
+            return count;
+        }
+
+        function buildGameArray(arr, indexesArr) {
+            var gameArr = [];
+            for (var i = 0; i < indexesArr.length; i++) {
+                for (var j = 0; j < arr.length; j++) {
+                    if (j === indexesArr[i]) {
+                        console.log("added to game array: " + arr[j])
+                        gameArr.push(arr[j]);
+                    }
+                }
+            }
+            return gameArr;
+        }
+
+
+        function updateAllRecordsState(arr, id, state) {
+            for (var i = 0; i < arr.length; i++) {
+                if (id === arr[i].id) {
+                    arr[i].isGuessed = state;
+                }
+            }
+        }
+
+        function getRandomArr(arr, min, max, count, excludeArr) {
+            if (typeof arr === 'undefined' || arr === null) {
+                arr = [];
+                console.log('arr: ' + arr);
+            }
+
+            var randNum = Math.floor(Math.random() * (max - min + 1)) + min;
+
+            if (!arr.includes(randNum) && !excludeArr.includes(randNum))
+                arr.push(randNum);
+
+            if (arr.length < count)
+                return getRandomArr(arr, min, max, count, excludeArr);
+            else
+                return arr;
+        }
+
+        function endTheGame(isWon) {
+
+            var contentDiv = document.getElementById("content");
+            while (contentDiv.firstChild) {
+                contentDiv.removeChild(contentDiv.firstChild);
+            }
+            $("#" + h1GameOverId).show();
+            var span = document.getElementById(gameOverSpanId);
+            var allGuessedCount = getAllGuessedCount(allRecordDecorators);
+            if (isWon) {
+
+                span.className = "label label-success";
+                span.innerHTML = "You won! Your score is " + allGuessedCount;
+            }
+            else {
+                span.className = "label label-danger";
+                span.innerHTML = "Game Over. Your score is " + allGuessedCount + ".";
+            }
+        }
+
+        //#endregion
+
+
         $(window).on('load', buildScreen(null));
 
 
@@ -263,12 +274,9 @@
         </div>
         <div class="div-table-col">
             <div class="div" id="resultContent">
-                @*<h1 id="h1Success"> <span id="success" class="label label-success">Correct!</span> </h1>
-        <h1 id="h1Failure"> <span id="failure" class="label label-danger">Wrong!</span> </h1>*@
 
-                @*<h1 id="h1Result"> <span id="spanResult"></span> </h1>*@
             </div>
-            </div>
+        </div>
     </div>
     <div class="div-table-row">
         <div id="content">

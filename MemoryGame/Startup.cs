@@ -40,8 +40,6 @@ namespace MemoryGame
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             //Email confirmation
             services.AddSingleton<IEmailSender, EmailSender>();
-            services.AddSingleton<IRandomService, RandomService>();
-            services.AddSingleton<ISessionHelper, SessionHelper>();
             
             services.Configure<AuthMessageSenderOptions>(Configuration);
 
