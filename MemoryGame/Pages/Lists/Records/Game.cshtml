@@ -5,9 +5,7 @@
     ViewData["Title"] = "The game for " + Model.Header;
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
-@using System.Net;
-@using Newtonsoft.Json;
-@using Newtonsoft.Json.Linq;
+
 <style>
     .div-table {
         display: table;
@@ -46,14 +44,29 @@
         const h1GameOverId = "h1GameOver";
         const gameOverSpanId = "gameOverSpan";
         const h1ResultId = "h1Result";
-        const config = { isFromForeignLanguage: false };
+        const recordSoreId = "recordSore";
+        const guessedCounterSpanId = "guessedCounterSpan";
+        const lifesSpanId = "lifesSpan";
+        const delayBeforeRedirectionWhenGameOverMilSeconds = 5000;
+
+        const config = { isFromForeignLanguage: @Html.Raw(Json.Serialize(Model.Config.IsFromForeignLanguage)),
+                            bestScore:  @Html.Raw(Json.Serialize(Model.Config.BestScore)),
+                            id:        @Html.Raw(Json.Serialize(Model.Config.ID)),
+                            userId:            @Html.Raw(Json.Serialize(Model.Config.UserId))
+        };
+        var gameListId;
         //#endregion
+
+        function updateElementHtmlById(id, text) {
+            var elem = document.getElementById(id);
+            elem.innerHTML = text;
+            return elem;
+        }
 
           //#region UI
         function onHandleClick() {
-            console.log("game record id is " + recordToGuess.id)
-            console.log("you choose record with id " + this.id)
-            var count = getAllGuessedCount(allRecordDecorators);
+            console.log("game record id is " + recordToGuess.id);
+            console.log("you choose record with id " + this.id);
 
             var resultContentDiv = document.getElementById("resultContent");
 
@@ -71,24 +84,41 @@
             $("#" + h1ResultId).blink({ delay: 200 });
             $("#" + h1ResultId).fadeOut(3000);
 
-            if (recordToGuess.id == this.id) {//correct
+            let isGuessIsCorrect = false;
+
+            if (recordToGuess.id == this.id) {
+                isGuessIsCorrect = true;
                 updateAllRecordsState(allRecordDecorators, parseInt(this.id), true);
-                if (count == allRecordDecorators.length - 1) {//you won!
-                    console.log("game over you won. count is " + count + " allRecordDecorators.length is " + allRecordDecorators.length - 1)
+            }
+            var count = getAllGuessedCount(allRecordDecorators);
+
+            if (isGuessIsCorrect) {//correct
+                updateAllRecordsState(allRecordDecorators, parseInt(this.id), true);
+
+                updateElementHtmlById(guessedCounterSpanId, "Your score is " + count);
+
+                if (count == allRecordDecorators.length) {//you won!
+                    console.log("game over you won. count is " + count + " allRecordDecorators.length is " + allRecordDecorators.length )
                     endTheGame(true);
                     return;
                 }
-
                 span.className = "label label-success";
                 span.innerHTML = "Correct!";
             }
             else {//wrong
                 if (constMaxWrongGuesses === _wrongGuesses) {//game over
-                    console.log("game over you loose. count is " + count + " allRecordDecorators.length is " + allRecordDecorators.length - 1)
+                    console.log("game over you loose. count is " + count + " allRecordDecorators.length is " + allRecordDecorators.length)
                     endTheGame(false);
                     return;
                 }
                 _wrongGuesses++;
+                var lifesSpan = updateElementHtmlById(lifesSpanId, constMaxWrongGuesses - _wrongGuesses);
+
+                if (constMaxWrongGuesses === _wrongGuesses + 1) {//last life
+                    lifesSpan.style.fontWeight = "bold";
+                    lifesSpan.style.color = "red";
+                }
+
                 span.className = "label label-danger";
                 span.innerHTML = "Wrong!";
             }
@@ -131,13 +161,20 @@
                 $("#" + labelRecordToGuessId).show();
                 $("#" + h1GameOverId).hide();
 
-                allRecordDecorators = @Html.Raw(Json.Serialize(Model.AllRecordDecorators));              
+                var recordSoreH1 = document.getElementById(recordSoreId);
+                recordSoreH1.innerHTML = "Your record is " + config.bestScore;
+
+                allRecordDecorators = @Html.Raw(Json.Serialize(Model.AllRecordDecorators));
+                gameListId=@Html.Raw(Json.Serialize(Model.ListId));
                 console.log("allRecordDecorators are " + JSON.stringify(allRecordDecorators));
                 const gameParameters = buildGameParameters(allRecordDecorators);
                 recordToGuess = gameParameters.recordToGuess;
                 gameRecordDecorators = gameParameters.gameArr;
                 console.log("gameRecordDecorators are " + JSON.stringify(gameRecordDecorators));
                 console.log("recordToGuess is " + JSON.stringify(recordToGuess));
+
+                updateElementHtmlById(guessedCounterSpanId, "Your score is 0");
+                updateElementHtmlById(lifesSpanId, constMaxWrongGuesses);
             }
             else {
                 gameRecordDecorators = gameArr;
@@ -149,6 +186,8 @@
                 recordToGuess.word : recordToGuess.translation;
 
             label.innerHTML = recordToGuessLabelContent;
+
+
             for (var i = 0; i < gameRecordDecorators.length; i++) {
 
                 var element = document.createElement("input");
@@ -232,7 +271,13 @@
             else
                 return arr;
         }
+        function post(config, listId) {
+            document
+                .forms[0].action = "Game?configId=" + config.id + "&recordScore=" +
+            config.bestScore + "&userId=" + config.userId + "&listId=" + listId;
 
+            document.forms[0].submit();
+        }
         function endTheGame(isWon) {
 
             var contentDiv = document.getElementById("content");
@@ -246,34 +291,43 @@
 
                 span.className = "label label-success";
                 span.innerHTML = "You won! Your score is " + allGuessedCount;
+                config.bestScore = allGuessedCount;
+
+                window.setTimeout(function () {
+                    post(config, gameListId);
+                }, delayBeforeRedirectionWhenGameOverMilSeconds);
             }
             else {
                 span.className = "label label-danger";
                 span.innerHTML = "Game Over. Your score is " + allGuessedCount + ".";
             }
         }
-
         //#endregion
-
-
         $(window).on('load', buildScreen(null));
-
 
     });
 </script>
 
 
-<h1>The Game</h1>
-
-
-
-
+<h1 id="recordSore"></h1>
 
 <div class="div-table">
     <div class="div-table-row">
         <div class="div-table-col">
+            <h2> <span id="guessedCounterSpan"></span> </h2>
+        </div>
+        <div class="div-table-col">
+            <div class="div">
+                <h2><span>Lifes: </span> <span id="lifesSpan"></span> </h2>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="div-table-row">
+        <div class="div-table-col">
             <h1 id="labelRecordToGuess">Title</h1>
-            <h1 id="h1GameOver"> <span id="gameOverSpan"></span> </h1>
+            <h1 id="h1GameOver"><span id="gameOverSpan"></span> </h1>
         </div>
         <div class="div-table-col">
             <div class="div" id="resultContent">
@@ -286,10 +340,9 @@
 
         </div>
     </div>
-
-
 </div>
 
+<form method="get"></form>
 
 <div>
     <a asp-page="./Index" asp-route-id="@Model.ListId">Back to Records</a> |

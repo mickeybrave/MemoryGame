@@ -1,0 +1,19 @@
+﻿@page "/Lists/{id}/Records/Won"
+@model MemoryGame.Pages.Records.Won
+
+@{
+    ViewData["Title"] = "Won";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h2>Dear @Model.UserName, You won!</h2>
+
+@if (Model.IsRecordIncreased)
+{
+    <h2>Well done! Your new record has been increased to @Model.RecordScore</h2>
+}
+
+    <div>
+        <a asp-page="../Index" asp-route-id="@Model.ListId">Back to List</a> |
+        <a asp-page="./Game" asp-route-id="@Model.ListId">Play the Memory Game Again</a>
+    </div>

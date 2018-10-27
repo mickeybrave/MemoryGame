@@ -83,7 +83,7 @@ namespace MemoryGame.Areas.Identity.Pages.Account
                     LastName = Input.LastName,
                     UserName = Input.Email,
                     Email = Input.Email,
-                    Config = new Config()
+                    Config = new Config() { IsFromForeignLanguage = true }
                 };
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)

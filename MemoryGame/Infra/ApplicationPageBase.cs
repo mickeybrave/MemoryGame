@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace MemoryGame.Infra
 {
+    //security
     [Authorize]
     public abstract class ApplicationPageBase : PageModel
     {
