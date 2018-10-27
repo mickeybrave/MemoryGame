@@ -33,8 +33,11 @@ namespace MemoryGame.Pages.Lists.Records
 
         public Config Config { get; set; }
         private const int ConstMaxWrongGuesses = 3;
+        public const int ConstMinRecordsForGame = 5;
+        public int MinRecordsForGame { get { return ConstMinRecordsForGame; } }
+        public bool IsGamePossible { get; set; }
         #endregion
-        
+
         #region Get
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -65,6 +68,11 @@ namespace MemoryGame.Pages.Lists.Records
 
             var recordsTemp = await records.ToListAsync();
 
+            if (records.Count() >= ConstMinRecordsForGame)
+            {
+                IsGamePossible = true;
+            }
+
             AllRecordDecorators = recordsTemp
                 .Select(s => new RecordDecorator(s))
                     .ToList();
@@ -86,7 +94,7 @@ namespace MemoryGame.Pages.Lists.Records
             return Redirect($"/Lists/{listId}/Records/Won?configId=" +
                 $"{configId}&recordScore={recordScore}&userId={userId}&listId={listId}");
         }
-               
+
         #endregion
 
     }
