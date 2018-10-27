@@ -12,7 +12,7 @@ namespace MemoryGame.Pages
 
         public void OnGet()
         {
-            Message = "Your application description page.";
+            Message = "This is the memmory game";
         }
     }
 }
