@@ -103,7 +103,7 @@
 
             //right guess - make the right button green anyway
             var rightRecordButton = document.getElementById(recordToGuess.id);
-            rightRecordButton.className = "btn btn-success btn-block submit"; 
+            rightRecordButton.className = "btn btn-success btn-block submit";
 
             var count = getAllGuessedCount(allRecordDecorators);
 
@@ -205,7 +205,7 @@
                 //Append the element in page (in span).
                 content.appendChild(element);
                 content.appendChild(document.createElement("br"));
-            }         
+            }
             //describe in report problem with click
             $('.submit').click(onHandleClick);
         }
@@ -275,32 +275,30 @@
                 }
             }
         }
-
+        //excludeArr - array for elements excluded from generation and gathering
         function getRandomArr(arr, min, max, count, excludeArr) {
             if (typeof arr === 'undefined' || arr === null) {
                 arr = [];
                 console.log('arr: ' + arr);
             }
-
             var randNum = Math.floor(Math.random() * (max - min + 1)) + min;
 
             if (!arr.includes(randNum) && !excludeArr.includes(randNum))
                 arr.push(randNum);
-
+            //continue recursion call untill will be enough elements
             if (arr.length < count)
                 return getRandomArr(arr, min, max, count, excludeArr);
             else
                 return arr;
         }
+        //call to the default POST method of the pages
         function post(config, listId) {
             document
                 .forms[0].action = "Game?configId=" + config.id + "&recordScore=" +
             config.bestScore + "&userId=" + config.userId + "&listId=" + listId;
-
             document.forms[0].submit();
         }
         function endTheGame(isWon) {
-
             var contentDiv = document.getElementById("content");
             while (contentDiv.firstChild) {
                 contentDiv.removeChild(contentDiv.firstChild);
@@ -367,8 +365,10 @@
 }
 else
 {
-    <h2> <span> There are not enough records to play the game.</span> </h2>
-    <h2> <span> Your list must contain at least @Model.MinRecordsForGame records.</span> </h2>
+    <h2>
+        <span class="label label-danger"> There are not enough records to play the game.</span> <br/>
+        <span class="label label-danger"> Your list must contain at least @Model.MinRecordsForGame records.</span>
+    </h2>
 }
 
 
