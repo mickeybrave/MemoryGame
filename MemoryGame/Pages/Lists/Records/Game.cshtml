@@ -50,6 +50,8 @@
         const guessedCounterSpanId = "guessedCounterSpan";
         const lifesSpanId = "lifesSpan";
         const delayBeforeRedirectionWhenGameOverMilSeconds = 5000;
+        const fadeOutDelay = 3000;
+        const blinkDelay = 200;
 
         const config = { isFromForeignLanguage: @Html.Raw(Json.Serialize(Model.Config.IsFromForeignLanguage)),
                             bestScore:  @Html.Raw(Json.Serialize(Model.Config.BestScore)),
@@ -83,8 +85,8 @@
             h1.appendChild(span);
             resultContentDiv.appendChild(h1);
 
-            $("#" + h1ResultId).blink({ delay: 200 });
-            $("#" + h1ResultId).fadeOut(3000);
+            $("#" + h1ResultId).blink({ delay: blinkDelay });
+            $("#" + h1ResultId).fadeOut(fadeOutDelay);
 
             let isGuessIsCorrect = false;
 
@@ -92,6 +94,17 @@
                 isGuessIsCorrect = true;
                 updateAllRecordsState(allRecordDecorators, parseInt(this.id), true);
             }
+
+            for (var i = 0; i < gameRecordDecorators.length; i++) {
+                var btn = document.getElementById(gameRecordDecorators[i].id);
+                btn.disabled = true;
+                console.log("button: translation" + gameRecordDecorators[i].translation + " ,with id=" + btn.id + " is disabled");
+            }
+
+            //right guess - make the right button green anyway
+            var rightRecordButton = document.getElementById(recordToGuess.id);
+            rightRecordButton.className = "btn btn-success btn-block submit"; 
+
             var count = getAllGuessedCount(allRecordDecorators);
 
             if (isGuessIsCorrect) {//correct
@@ -108,6 +121,9 @@
                 span.innerHTML = "Correct!";
             }
             else {//wrong
+                var wrongButton = document.getElementById(this.id);
+                wrongButton.className = "btn btn-danger btn-block submit";
+
                 if (constMaxWrongGuesses === _wrongGuesses) {//game over
                     console.log("game over you loose. count is " + count + " allRecordDecorators.length is " + allRecordDecorators.length)
                     endTheGame(false);
@@ -128,27 +144,11 @@
             console.log("getAllGuessedCount is " + count);
             const gameParameters = buildGameParameters(allRecordDecorators);
             recordToGuess = gameParameters.recordToGuess;
-            buildScreen(gameParameters.gameArr);
-        }
+            //build screen with the same delay as correct/wrong label disappears to show that to the user
+            window.setTimeout(function () {
+                buildScreen(gameParameters.gameArr);
+            }, fadeOutDelay);
 
-        function buildGameParameters(allRecords) {
-            const guessedIdexes = getAllGuessedIndexes(allRecords);
-            console.log("excludeIdexes are " + guessedIdexes);
-
-            const indexGuessRecordUnique = getRandomArr(null, 0, allRecords.length - 1, 1, guessedIdexes)[0];
-            const indexsForGameRecords = getRandomArr(null, 0, allRecords.length - 1, 3, [indexGuessRecordUnique]);
-
-            const indexForGameRecordInGameArray = getRandomArr(null, 0, 2, 1, [])[0];
-
-            indexsForGameRecords[indexForGameRecordInGameArray] = indexGuessRecordUnique;
-
-            const gameArr = buildGameArray(allRecords, indexsForGameRecords);
-            console.log("gameArr is " + JSON.stringify(gameArr));
-
-            console.log("indexGuessRecordUnique is " + indexGuessRecordUnique);
-            const  recordToGuess = allRecords[indexGuessRecordUnique];
-
-            return { gameArr, recordToGuess };
         }
 
         function buildScreen(gameArr) {
@@ -200,14 +200,12 @@
                     gameRecordDecorators[i].translation : gameRecordDecorators[i].word;
 
                 element.setAttribute("value", buttonContent);
-
                 element.setAttribute("id", gameRecordDecorators[i].id.toString());
-                element.setAttribute("test", gameRecordDecorators[i].id);
                 var content = document.getElementById("content");
                 //Append the element in page (in span).
                 content.appendChild(element);
                 content.appendChild(document.createElement("br"));
-            }
+            }         
             //describe in report problem with click
             $('.submit').click(onHandleClick);
         }
@@ -215,6 +213,27 @@
           //#endregion
 
         //#region BL
+
+        function buildGameParameters(allRecords) {
+            const guessedIdexes = getAllGuessedIndexes(allRecords);
+            console.log("excludeIdexes are " + guessedIdexes);
+
+            const indexGuessRecordUnique = getRandomArr(null, 0, allRecords.length - 1, 1, guessedIdexes)[0];
+            const indexsForGameRecords = getRandomArr(null, 0, allRecords.length - 1, 3, [indexGuessRecordUnique]);
+
+            const indexForGameRecordInGameArray = getRandomArr(null, 0, 2, 1, [])[0];
+
+            indexsForGameRecords[indexForGameRecordInGameArray] = indexGuessRecordUnique;
+
+            const gameArr = buildGameArray(allRecords, indexsForGameRecords);
+            console.log("gameArr is " + JSON.stringify(gameArr));
+
+            console.log("indexGuessRecordUnique is " + indexGuessRecordUnique);
+            const recordToGuess = allRecords[indexGuessRecordUnique];
+
+            return { gameArr, recordToGuess };
+
+        }
         function getAllGuessedIndexes(arr) {
             var indexes = [];
             for (var i = 0; i < arr.length; i++) {
