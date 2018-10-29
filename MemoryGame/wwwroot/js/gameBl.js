@@ -14,12 +14,14 @@ function gameBl(allRecordDecorators, gameListId, config) {
     const labelRecordToGuessId = "labelRecordToGuess";
     const h1GameOverId = "h1GameOver";
     const gameOverSpanId = "gameOverSpan";
-    const h1ResultId = "h1Result";
+    const h1ResultId = "h1Result";  
     const spanResultId = "spanResult";
     const recordScoreId = "recordScore";
     const guessedCounterSpanId = "guessedCounterSpan";
     const lifesSpanId = "lifesSpan";
-   
+    const gameDefaultButtonStyleName = "btn btn-dark btn-lg btn-block submit";
+    const gameWrongButtonStyleName = "btn btn-danger btn-lg btn-block submit";
+    const gameRightButtonStyleName = "btn btn-success btn-lg btn-block submit";
    
     //#endregion
 
@@ -75,7 +77,7 @@ function gameBl(allRecordDecorators, gameListId, config) {
             disableElement(gameRecordDecorators[i].id);
         }
         //right guess - make the right button green anyway
-        updateElementCssClass(recordToGuess.id, "btn btn-success btn-block submit");
+        updateElementCssClass(recordToGuess.id, gameRightButtonStyleName);
         var count;
 
         if (recordToGuess.id == this.id) {//correct
@@ -85,7 +87,7 @@ function gameBl(allRecordDecorators, gameListId, config) {
             count = getAllGuessedCount(allRecordDecorators);
             console.log("Your score is " + count);
             updateElementHtmlById(guessedCounterSpanId, "Your score is " + count);
-            updateElementCssClass(spanResultId, "label label-success").innerHTML = "Correct!";
+            updateElementCssClass(spanResultId, "label label-success").innerHTML ="&#x1F603; " +" Correct!";//happy emoji
 
             if (count == allRecordDecorators.length) {//you won!
                 console.log("game over you won. count is " + count + " allRecordDecorators.length is " + allRecordDecorators.length)
@@ -94,14 +96,14 @@ function gameBl(allRecordDecorators, gameListId, config) {
             }
         }
         else {//wrong
-            updateElementCssClass(this.id, "btn btn-danger btn-block submit")
+            updateElementCssClass(this.id, gameWrongButtonStyleName)
             _wrongGuesses++;
             const lifesSpan = updateElementHtmlById(lifesSpanId, config.maxWrongGuesses - _wrongGuesses);
 
             if (config.maxWrongGuesses === _wrongGuesses + 1) {//last life
                 lifesSpan.className = "lastLife";
             }
-            updateElementCssClass(spanResultId, "label label-danger").innerHTML = "Wrong!";
+            updateElementCssClass(spanResultId, "label label-danger").innerHTML ="&#x1F622; "+ "Wrong!";//unhappy emojy
 
             if (config.maxWrongGuesses === _wrongGuesses) {//game over
                 console.log("game over you loose. count is " + count + " allRecordDecorators.length is " + allRecordDecorators.length)
@@ -167,7 +169,7 @@ function gameBl(allRecordDecorators, gameListId, config) {
             const buttonContent = config.isFromForeignLanguage === true ?
                 gameRecordDecorators[i].translation : gameRecordDecorators[i].word;
             addElemToElem("content", gameRecordDecorators[i].id, buttonContent, "button",
-                "btn btn-info btn-block submit");
+                gameDefaultButtonStyleName);
         }
         //describe in report problem with click
         $('.submit').click(onHandleClick);//add click handler to all buttons that have "submit" in css class name
