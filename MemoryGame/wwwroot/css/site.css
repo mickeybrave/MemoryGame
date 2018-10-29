@@ -28,6 +28,31 @@ body {
     margin: 15px;
 }
 
+.div-table {
+    display: table;
+    width: 100%;
+}
+
+.div-table-row {
+    display: table-row;
+    clear: both;
+}
+
+.div-table-col {
+    float: left;
+    display: table-column;
+    width: 50%;
+}
+
+.div {
+    float: right;
+}
+
+.lastLife {
+    font-weight: bold;
+    color: red;
+}
+
 /* Hide/rearrange for smaller screens */
 @media screen and (max-width: 767px) {
     /* Hide captions */
