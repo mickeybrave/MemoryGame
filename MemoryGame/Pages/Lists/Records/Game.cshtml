@@ -6,6 +6,7 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
+
 @if (@Model.IsGamePossible)
 {
     <style>
@@ -28,10 +29,18 @@
         .div {
             float: right;
         }
+
+        .lastLife {
+            font-weight: bold;
+            color: red;
+        }
     </style>
     <script>
 
 
+
+     //reduce the functions
+     // function does 1 thing
 
 
     $(document).ready(function () {
@@ -46,9 +55,12 @@
         const h1GameOverId = "h1GameOver";
         const gameOverSpanId = "gameOverSpan";
         const h1ResultId = "h1Result";
-        const recordSoreId = "recordSore";
+        const spanResultId = "spanResult";
+        const recordScoreId = "recordScore";
         const guessedCounterSpanId = "guessedCounterSpan";
         const lifesSpanId = "lifesSpan";
+        const buttonsNumberInUI = 3;
+
         const delayBeforeRedirectionWhenGameOverMilSeconds = 5000;
         const fadeOutDelay = 3000;
         const blinkDelay = 200;
@@ -61,87 +73,97 @@
         var gameListId;
         //#endregion
 
+
+
+       //add more commends
+       //#region UI
+
         function updateElementHtmlById(id, text) {
             var elem = document.getElementById(id);
             elem.innerHTML = text;
             return elem;
         }
 
-          //#region UI
+        function clearElement(elem) {
+            while (elem.firstChild) {
+                elem.removeChild(elem.firstChild);
+            }
+        }
+
+        function animateElementById(id, blinkAnDelay, fadeOutAnDelay) {
+            $("#" + id).blink({ delay: blinkAnDelay });
+            $("#" + id).fadeOut(fadeOutAnDelay);
+        }
+
+        function disableElement(id) {
+            var elem = document.getElementById(id);
+            elem.disabled = true;
+            console.log("button: " + " ,with id=" + elem.id + " is disabled");
+        }
+
+        function updateElementCssClass(id, className) {
+            const elem = document.getElementById(id);
+            elem.className = className;
+            return elem;
+        }
+
+        function createElement(id, type) {
+            const elem = document.createElement(type);
+            elem.id = id;
+            return elem;
+        }
+
         function onHandleClick() {
-            console.log("game record id is " + recordToGuess.id);
-            console.log("you choose record with id " + this.id);
-
             var resultContentDiv = document.getElementById("resultContent");
-
-            while (resultContentDiv.firstChild) {
-                resultContentDiv.removeChild(resultContentDiv.firstChild);
-            }
-
-            var h1 = document.createElement("h1");
-            var span = document.createElement("span");
-
-            h1.id = h1ResultId;
-            h1.appendChild(span);
+            //clear all result labels
+            clearElement(resultContentDiv);
+            //generate new result label
+            const h1 = createElement(h1ResultId, "h1");
+            h1.appendChild(createElement(spanResultId, "span"));
+            // add them to the screen
             resultContentDiv.appendChild(h1);
-
-            $("#" + h1ResultId).blink({ delay: blinkDelay });
-            $("#" + h1ResultId).fadeOut(fadeOutDelay);
-
-            let isGuessIsCorrect = false;
-
-            if (recordToGuess.id == this.id) {
-                isGuessIsCorrect = true;
-                updateAllRecordsState(allRecordDecorators, parseInt(this.id), true);
-            }
-
+            //add animation to result label
+            animateElementById(h1ResultId, blinkDelay, fadeOutDelay);
+            // make buttons disabled to avoid redundunt clicking
             for (var i = 0; i < gameRecordDecorators.length; i++) {
-                var btn = document.getElementById(gameRecordDecorators[i].id);
-                btn.disabled = true;
-                console.log("button: translation" + gameRecordDecorators[i].translation + " ,with id=" + btn.id + " is disabled");
+                disableElement(gameRecordDecorators[i].id);
             }
-
             //right guess - make the right button green anyway
-            var rightRecordButton = document.getElementById(recordToGuess.id);
-            rightRecordButton.className = "btn btn-success btn-block submit";
+            updateElementCssClass(recordToGuess.id, "btn btn-success btn-block submit");
+            var count;
 
-            var count = getAllGuessedCount(allRecordDecorators);
-
-            if (isGuessIsCorrect) {//correct
+            if (recordToGuess.id == this.id) {//correct
+                //mark record wheather it was guessed or not, to exclude this record from the game
+                //update isGuessed state to "true" should be before counting of getAllGuessedCount
                 updateAllRecordsState(allRecordDecorators, parseInt(this.id), true);
-
+                count = getAllGuessedCount(allRecordDecorators);
+                console.log("Your score is " + count);
                 updateElementHtmlById(guessedCounterSpanId, "Your score is " + count);
+                updateElementCssClass(spanResultId, "label label-success").innerHTML = "Correct!";
 
                 if (count == allRecordDecorators.length) {//you won!
                     console.log("game over you won. count is " + count + " allRecordDecorators.length is " + allRecordDecorators.length )
                     endTheGame(true);
                     return;
                 }
-                span.className = "label label-success";
-                span.innerHTML = "Correct!";
             }
             else {//wrong
-                var wrongButton = document.getElementById(this.id);
-                wrongButton.className = "btn btn-danger btn-block submit";
+                updateElementCssClass(this.id, "btn btn-danger btn-block submit")
+                _wrongGuesses++;
+                const lifesSpan = updateElementHtmlById(lifesSpanId, constMaxWrongGuesses - _wrongGuesses);
+
+                if (constMaxWrongGuesses === _wrongGuesses + 1) {//last life
+                    lifesSpan.className = "lastLife";
+                }
+                updateElementCssClass(spanResultId, "label label-danger").innerHTML = "Wrong!";
 
                 if (constMaxWrongGuesses === _wrongGuesses) {//game over
                     console.log("game over you loose. count is " + count + " allRecordDecorators.length is " + allRecordDecorators.length)
                     endTheGame(false);
                     return;
                 }
-                _wrongGuesses++;
-                var lifesSpan = updateElementHtmlById(lifesSpanId, constMaxWrongGuesses - _wrongGuesses);
-
-                if (constMaxWrongGuesses === _wrongGuesses + 1) {//last life
-                    lifesSpan.style.fontWeight = "bold";
-                    lifesSpan.style.color = "red";
-                }
-
-                span.className = "label label-danger";
-                span.innerHTML = "Wrong!";
             }
 
-            console.log("getAllGuessedCount is " + count);
             const gameParameters = buildGameParameters(allRecordDecorators);
             recordToGuess = gameParameters.recordToGuess;
             //build screen with the same delay as correct/wrong label disappears to show that to the user
@@ -151,23 +173,12 @@
 
         }
 
-        function buildScreen(gameArr) {
-            //clear the screen and define new records
-            var contentDiv = document.getElementById("content");
-            while (contentDiv.firstChild) {
-                contentDiv.removeChild(contentDiv.firstChild);
-            }
-            //initializing - first time
-            if (typeof gameArr === 'undefined' || gameArr === null) {
-
-                $("#" + labelRecordToGuessId).show();
-                $("#" + h1GameOverId).hide();
-
-                var recordSoreH1 = document.getElementById(recordSoreId);
-                recordSoreH1.innerHTML = "Your record is " + config.bestScore;
+        function initGameParams() {
+             var recordScoreH1 = document.getElementById(recordScoreId);
+                recordScoreH1.innerHTML = "Your record is " + config.bestScore;
 
                 allRecordDecorators = @Html.Raw(Json.Serialize(Model.AllRecordDecorators));
-                gameListId=@Html.Raw(Json.Serialize(Model.ListId));
+                gameListId = @Html.Raw(Json.Serialize(Model.ListId));
                 console.log("allRecordDecorators are " + JSON.stringify(allRecordDecorators));
                 const gameParameters = buildGameParameters(allRecordDecorators);
                 recordToGuess = gameParameters.recordToGuess;
@@ -177,63 +188,104 @@
 
                 updateElementHtmlById(guessedCounterSpanId, "Your score is 0");
                 updateElementHtmlById(lifesSpanId, constMaxWrongGuesses);
+        }
+
+        function addElemToElem(parentId,elemId,elemValue, elemType,elemCss) {
+            var element = document.createElement("input");
+            //Assign different attributes to the element.
+            element.setAttribute("type", elemType);
+            element.setAttribute("class", elemCss);
+            element.setAttribute("value", elemValue);
+            element.setAttribute("id", elemId);
+            var content = document.getElementById(parentId);
+            //Append the element in page (in span).
+            content.appendChild(element);
+            content.appendChild(document.createElement("br"));
+        }
+
+        function buildScreen(gameArr) {
+            //clear the screen and define new records
+            var contentDiv = document.getElementById("content");
+            clearElement(contentDiv);
+
+            //initializing - first time
+            if (typeof gameArr === 'undefined' || gameArr === null) {
+                initGameParams();
             }
             else {
                 gameRecordDecorators = gameArr;
             }
-
-            var label = document.getElementById(labelRecordToGuessId)
-
-            const recordToGuessLabelContent = config.isFromForeignLanguage === true ?
+            //if isFromForeignLanguage==true, update labelRecordToGuess with word, otherwise with translation
+            document.getElementById(labelRecordToGuessId).innerHTML = config.isFromForeignLanguage === true ?
                 recordToGuess.word : recordToGuess.translation;
 
-            label.innerHTML = recordToGuessLabelContent;
-
-
             for (var i = 0; i < gameRecordDecorators.length; i++) {
-
-                var element = document.createElement("input");
-                //Assign different attributes to the element.
-                element.setAttribute("type", "button");
-                element.setAttribute("class", "btn btn-info btn-block submit");
                 const buttonContent = config.isFromForeignLanguage === true ?
                     gameRecordDecorators[i].translation : gameRecordDecorators[i].word;
-
-                element.setAttribute("value", buttonContent);
-                element.setAttribute("id", gameRecordDecorators[i].id.toString());
-                var content = document.getElementById("content");
-                //Append the element in page (in span).
-                content.appendChild(element);
-                content.appendChild(document.createElement("br"));
+                addElemToElem("content", gameRecordDecorators[i].id, buttonContent, "button",
+                    "btn btn-info btn-block submit");
             }
             //describe in report problem with click
-            $('.submit').click(onHandleClick);
+            $('.submit').click(onHandleClick);//add click handler to all buttons that have "submit" in css class name
         }
 
-          //#endregion
+        //#endregion
 
         //#region BL
-
-        function buildGameParameters(allRecords) {
-            const guessedIdexes = getAllGuessedIndexes(allRecords);
-            console.log("excludeIdexes are " + guessedIdexes);
-
-            const indexGuessRecordUnique = getRandomArr(null, 0, allRecords.length - 1, 1, guessedIdexes)[0];
-            const indexsForGameRecords = getRandomArr(null, 0, allRecords.length - 1, 3, [indexGuessRecordUnique]);
-
-            const indexForGameRecordInGameArray = getRandomArr(null, 0, 2, 1, [])[0];
-
-            indexsForGameRecords[indexForGameRecordInGameArray] = indexGuessRecordUnique;
-
-            const gameArr = buildGameArray(allRecords, indexsForGameRecords);
-            console.log("gameArr is " + JSON.stringify(gameArr));
-
-            console.log("indexGuessRecordUnique is " + indexGuessRecordUnique);
-            const recordToGuess = allRecords[indexGuessRecordUnique];
-
-            return { gameArr, recordToGuess };
-
+        function updateAllRecordsState(arr, id, state) {
+            for (var i = 0; i < arr.length; i++) {
+                if (id === arr[i].id) {
+                    arr[i].isGuessed = state;
+                }
+            }
         }
+
+        //excludeArr - array for elements excluded from generation and gathering
+        function getRandomArr(arr, min, max, count, excludeArr) {
+            if (typeof arr === 'undefined' || arr === null) {
+                arr = [];
+                console.log('arr: ' + arr);
+            }
+            var randNum = Math.floor(Math.random() * (max - min + 1)) + min;
+
+            if (!arr.includes(randNum) && !excludeArr.includes(randNum))
+                arr.push(randNum);
+            //continue recursion call untill will be enough elements
+            if (arr.length < count)
+                return getRandomArr(arr, min, max, count, excludeArr);
+            else
+                return arr;
+        }
+        //call to the default POST method of the pages
+
+        function post(config, listId) {
+            document
+                .forms[0].action = "Game?configId=" + config.id + "&recordScore=" +
+                config.bestScore + "&userId=" + config.userId + "&listId=" + listId;
+            document.forms[0].submit();
+        }
+
+        function endTheGame(isWon) {
+            var contentDiv = document.getElementById("content");
+            clearElement(contentDiv);
+            $("#" + h1GameOverId).show();
+
+            var allGuessedCount = getAllGuessedCount(allRecordDecorators);
+            if (isWon) {
+                updateElementCssClass(gameOverSpanId, "label label-success").innerHTML =
+                    "You won! Your score is " + allGuessedCount;
+                config.bestScore = allGuessedCount;
+
+                window.setTimeout(function () {
+                    post(config, gameListId);
+                }, delayBeforeRedirectionWhenGameOverMilSeconds);
+            }
+            else {
+                updateElementCssClass(gameOverSpanId, "label label-danger").innerHTML =
+                    "Game Over. Your score is " + allGuessedCount + ".";
+            }
+        }
+
         function getAllGuessedIndexes(arr) {
             var indexes = [];
             for (var i = 0; i < arr.length; i++) {
@@ -267,60 +319,26 @@
             return gameArr;
         }
 
+        function buildGameParameters(allRecords) {
+            const guessedIdexes = getAllGuessedIndexes(allRecords);
+            console.log("excludeIdexes are " + guessedIdexes);
 
-        function updateAllRecordsState(arr, id, state) {
-            for (var i = 0; i < arr.length; i++) {
-                if (id === arr[i].id) {
-                    arr[i].isGuessed = state;
-                }
-            }
-        }
-        //excludeArr - array for elements excluded from generation and gathering
-        function getRandomArr(arr, min, max, count, excludeArr) {
-            if (typeof arr === 'undefined' || arr === null) {
-                arr = [];
-                console.log('arr: ' + arr);
-            }
-            var randNum = Math.floor(Math.random() * (max - min + 1)) + min;
+            const indexGuessRecordUnique = getRandomArr(null, 0, allRecords.length - 1, 1,
+                guessedIdexes)[0];
+            const indexsForGameRecords = getRandomArr(null, 0, allRecords.length - 1, buttonsNumberInUI,
+                [indexGuessRecordUnique]);
 
-            if (!arr.includes(randNum) && !excludeArr.includes(randNum))
-                arr.push(randNum);
-            //continue recursion call untill will be enough elements
-            if (arr.length < count)
-                return getRandomArr(arr, min, max, count, excludeArr);
-            else
-                return arr;
-        }
-        //call to the default POST method of the pages
-        function post(config, listId) {
-            document
-                .forms[0].action = "Game?configId=" + config.id + "&recordScore=" +
-            config.bestScore + "&userId=" + config.userId + "&listId=" + listId;
-            document.forms[0].submit();
-        }
-        function endTheGame(isWon) {
-            var contentDiv = document.getElementById("content");
-            while (contentDiv.firstChild) {
-                contentDiv.removeChild(contentDiv.firstChild);
-            }
-            $("#" + h1GameOverId).show();
-            var span = document.getElementById(gameOverSpanId);
-            var allGuessedCount = getAllGuessedCount(allRecordDecorators);
-            if (isWon) {
+            const indexForGameRecordInGameArray = getRandomArr(null, 0, 2, 1, [])[0];
 
-                span.className = "label label-success";
-                span.innerHTML = "You won! Your score is " + allGuessedCount;
-                config.bestScore = allGuessedCount;
+            indexsForGameRecords[indexForGameRecordInGameArray] = indexGuessRecordUnique;
 
-                window.setTimeout(function () {
-                    post(config, gameListId);
-                }, delayBeforeRedirectionWhenGameOverMilSeconds);
-            }
-            else {
-                span.className = "label label-danger";
-                span.innerHTML = "Game Over. Your score is " + allGuessedCount + ".";
-            }
+            return {
+                "gameArr": buildGameArray(allRecords, indexsForGameRecords),
+                "recordToGuess": allRecords[indexGuessRecordUnique]
+            };
+
         }
+
         //#endregion
         $(window).on('load', buildScreen(null));
 
@@ -328,7 +346,7 @@
     </script>
 
 
-    <h1 id="recordSore"></h1>
+    <h1 id="recordScore"></h1>
 
     <div class="div-table">
         <div class="div-table-row">
@@ -366,7 +384,7 @@
 else
 {
     <h2>
-        <span class="label label-danger"> There are not enough records to play the game.</span> <br/>
+        <span class="label label-danger"> There are not enough records to play the game.</span> <br />
         <span class="label label-danger"> Your list must contain at least @Model.MinRecordsForGame records.</span>
     </h2>
 }
