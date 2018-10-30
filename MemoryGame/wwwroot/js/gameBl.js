@@ -17,6 +17,8 @@ function gameBl(allRecordDecorators, gameListId, config) {
     const h1ResultId = "h1Result";  
     const spanResultId = "spanResult";
     const recordScoreId = "recordScore";
+    const guessesCounterId = "guessesCounter";
+    
     const guessedCounterSpanId = "guessedCounterSpan";
     const lifesSpanId = "lifesSpan";
     const gameDefaultButtonStyleName = "btn btn-dark btn-lg btn-block submit";
@@ -85,6 +87,10 @@ function gameBl(allRecordDecorators, gameListId, config) {
             //update isGuessed state to "true" should be before counting of getAllGuessedCount
             updateAllRecordsState(allRecordDecorators, parseInt(this.id), true);
             count = getAllGuessedCount(allRecordDecorators);
+            //define label with information how many records are left to win
+            updateElementHtmlById(guessesCounterId, "There are " + (allRecordDecorators.length - count)
+                + " records left");
+            
             console.log("Your score is " + count);
             updateElementHtmlById(guessedCounterSpanId, "Your score is " + count);
             updateElementCssClass(spanResultId, "label label-success").innerHTML ="&#x1F603; " +" Correct!";//happy emoji
@@ -133,6 +139,9 @@ function gameBl(allRecordDecorators, gameListId, config) {
         console.log("recordToGuess is " + JSON.stringify(recordToGuess));
 
         updateElementHtmlById(guessedCounterSpanId, "Your score is 0");
+        //define label with information how many records are left to win
+        updateElementHtmlById(guessesCounterId, "There are " + allRecordDecorators.length + " records left");
+
         updateElementHtmlById(lifesSpanId, config.maxWrongGuesses);
     }
 
