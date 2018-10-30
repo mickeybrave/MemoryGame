@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MemoryGame.Areas.Identity.Data;
@@ -27,6 +25,9 @@ namespace MemoryGame.Pages
 
         [BindProperty]
         public Config Config { get; set; }
+
+        public IEnumerable<SelectListItem> GameDirections { get; set; }
+
         //private string _userId;
         public async Task<IActionResult> OnGetAsync(string userId)
         {
@@ -42,7 +43,19 @@ namespace MemoryGame.Pages
             {
                 return NotFound("Configuration is not found for user with id=" + userId);
             }
-            ViewData["UserId"] = new SelectList(_context.Set<User>(), "Id", "Id");
+            GameDirections = new SelectList(new List<SelectListItem> {  new SelectListItem
+                        {
+                            Value = Config.IsFromForeignLanguage.ToString(),
+                            Text = "From Foreign Language",
+                            Selected = Config.IsFromForeignLanguage
+                        },
+                        new SelectListItem
+                        {
+                            Text = "From Native Language",
+                            Value =(!Config.IsFromForeignLanguage).ToString(),
+                            Selected = !Config.IsFromForeignLanguage
+                        }
+            }, "Value", "Text");
             return Page();
         }
 
