@@ -1,20 +1,15 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using MemoryGame.Models;
-using Microsoft.AspNetCore.Authorization;
+using MemoryGame.Infra;
 
 namespace MemoryGame.Pages.Records
 {
-    [Authorize]
-    public class DetailsModel : PageModel
+    public class DetailsModel : ApplicationPageBase
     {
-        private readonly MemoryGame.Models.MemoryGameContext _context;
-
-        public DetailsModel(MemoryGame.Models.MemoryGameContext context)
+        public DetailsModel(MemoryGameContext context):base(context)
         {
-            _context = context;
         }
         public Record Record { get; set; }
 

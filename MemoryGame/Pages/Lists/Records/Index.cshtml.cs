@@ -1,16 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using MemoryGame.Models;
-using Microsoft.AspNetCore.Authorization;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using MemoryGame.Infra;
 
 namespace MemoryGame.Pages.Records
 {
-    [Authorize]
     public class IndexModel : ApplicationPageBase
     {
 

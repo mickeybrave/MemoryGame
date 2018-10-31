@@ -10,7 +10,6 @@ using System.Linq;
 
 namespace MemoryGame.Pages.Records
 {
-    [Authorize]
     public class Won : ApplicationPageBase
     {
         private readonly SignInManager<User> _signInManager;

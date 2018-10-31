@@ -1,20 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using MemoryGame.Areas.Identity.Data;
-using MemoryGame.Areas.Identity.Services;
-using MemoryGame.Models;
+﻿using MemoryGame.Areas.Identity.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.EntityFrameworkCore;
-using MemoryGame.Infra;
 
 namespace MemoryGame
 {
@@ -50,6 +41,7 @@ namespace MemoryGame
                    .AddRazorPagesOptions(options =>
                     {
                         options.Conventions.AddPageRoute("/Lists/Index", "");
+                        //calling for default URL redirects to page /Lists/Index that shows all lists for current user
                     });
         }
 

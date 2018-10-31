@@ -1,20 +1,16 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using MemoryGame.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using MemoryGame.Infra;
 
 namespace MemoryGame.Pages.Records
 {
-    [Authorize]
-    public class CreateModel : PageModel
+    public class CreateModel : ApplicationPageBase
     {
-        private readonly MemoryGameContext _context;
-
-        public CreateModel(MemoryGameContext context)
+        public CreateModel(MemoryGameContext context) : base(context)
         {
-            _context = context;
         }
 
         public IActionResult OnGet()

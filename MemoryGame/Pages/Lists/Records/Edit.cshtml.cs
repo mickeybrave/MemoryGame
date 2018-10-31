@@ -1,21 +1,16 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using MemoryGame.Models;
-using Microsoft.AspNetCore.Authorization;
+using MemoryGame.Infra;
 
 namespace MemoryGame.Pages.Records
 {
-    [Authorize]
-    public class EditModel : PageModel
+    public class EditModel : ApplicationPageBase
     {
-        private readonly MemoryGame.Models.MemoryGameContext _context;
-
-        public EditModel(MemoryGame.Models.MemoryGameContext context)
+        public EditModel(MemoryGameContext context) : base(context)
         {
-            _context = context;
         }
 
         [BindProperty]
