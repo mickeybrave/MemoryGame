@@ -8,6 +8,9 @@ namespace MemoryGame.Areas.Identity.Services
 {
     public class EmailSender : IEmailSender
     {
+        private const string ConstApplicationEmailAddress = "MemoryGame.Michael.Braverman@gmail.com";
+        private const string ConstApplicationEmailPassword = "AAAaaa_123";
+
         public EmailSender(IOptions<AuthMessageSenderOptions> optionsAccessor)
         {
             Options = optionsAccessor.Value;
@@ -24,13 +27,13 @@ namespace MemoryGame.Areas.Identity.Services
         {
             var client = new SmtpClient("smtp.gmail.com", 587)
             {
-                Credentials = new NetworkCredential("MemoryGame.Michael.Braverman@gmail.com", "AAAaaa_123"),
+                Credentials = new NetworkCredential(ConstApplicationEmailAddress, ConstApplicationEmailPassword),
                 EnableSsl = true
             };
 
 
             MailMessage msg = new MailMessage();
-            msg.From = new MailAddress("MemoryGame.Michael.Braverman@gmail.com");
+            msg.From = new MailAddress(ConstApplicationEmailAddress);
             msg.To.Add(email);
             msg.Subject = subject;
             msg.IsBodyHtml = true;
